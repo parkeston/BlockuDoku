@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
+    [SerializeField] private FiguresPool figuresPool;
     [SerializeField] private RectTransform rectTransform;
     [SerializeField] private GridRenderer gridRenderer;
     
@@ -28,13 +29,16 @@ public class Grid : MonoBehaviour
         if(Math.Abs(r.height - gridSize.y*cellSize) > Mathf.Epsilon)
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,gridSize.y*cellSize);
     }
-    
+
     private void Awake()
     {
         ClosestPoints = new HashSet<(int, int)>();
         SetPoints = new HashSet<(int, int)>();
         gridPoints = new Dictionary<(int, int), Vector2>();
+    }
 
+    private void Start()
+    {
         var r = rectTransform.rect;
         for (int y = 0; y < gridSize.y; y++)
         {
@@ -45,7 +49,8 @@ public class Grid : MonoBehaviour
             }
         }
 
-        gridBounds = new Bounds(transform.TransformPoint(r.center),r.size);
+        gridBounds = new Bounds();
+        rectTransform.GetBounds(ref gridBounds);
     }
 
     private void OnEnable()
@@ -59,10 +64,13 @@ public class Grid : MonoBehaviour
         FigureMover.OnFigureDrag -= UpdateGridDetectionOnDrag;
         FigureMover.OnFigureDragEnded -= UpdateGridDetectionOnDragEnd;
     }
-    
+
     private void UpdateGridDetectionOnDrag(Figure figure)
     {
         var figureBounds = figure.Bounds;
+        //shrink bounds of figure to it's center points to easier stack it on grid edges
+        figureBounds.Expand(new Vector3(-1,-1,0)*cellSize);
+        
         if (gridBounds.Contains(figureBounds.min) && gridBounds.Contains(figureBounds.max))
         {
             ClosestPoints.Clear();
@@ -97,13 +105,15 @@ public class Grid : MonoBehaviour
         }
     }
     
-    private void UpdateGridDetectionOnDragEnd()
+    private void UpdateGridDetectionOnDragEnd(Figure figure)
     { 
         if (ClosestPoints.Count>0)
         {
             SetPoints.UnionWith(ClosestPoints);
             ClosestPoints.Clear();
             gridRenderer.SetVerticesDirty();
+            
+            figuresPool.DisposeFigure(figure);
         }
     }
 }

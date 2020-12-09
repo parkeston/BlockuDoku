@@ -17,7 +17,7 @@ public class FigureMover : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     private bool isDragging;
 
     public static event Action<Figure> OnFigureDrag;
-    public static event Action OnFigureDragEnded;
+    public static event Action<Figure> OnFigureDragEnded;
 
     private void Awake()
     {
@@ -46,7 +46,7 @@ public class FigureMover : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         transform.position = startingPosition;
         isDragging = false;
         
-        OnFigureDragEnded?.Invoke();
+        OnFigureDragEnded?.Invoke(figure);
     }
 
     private void Update()

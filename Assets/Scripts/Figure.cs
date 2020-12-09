@@ -20,14 +20,9 @@ public class Figure : MonoBehaviour
     {
         get
         {
-            var rect = rectTransform.rect;
             if (bounds == default)
-                bounds = new Bounds(transform.TransformPoint(rect.center),rect.size);
-            else
-            {
-                bounds.center = transform.TransformPoint(rect.center);
-                bounds.size = rect.size;
-            }
+                bounds = new Bounds();
+            rectTransform.GetBounds(ref bounds);
 
             return bounds;
         }
@@ -44,10 +39,14 @@ public class Figure : MonoBehaviour
         if(Math.Abs(r.height -desiredHeight) > Mathf.Epsilon)
             rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,desiredHeight);
     }
-    
+
     private void Awake()
     {
         LocalFigurePoints = new List<Vector2>();
+    }
+
+    private void Start()
+    {
         var r = rectTransform.rect;
 
         foreach (var drawCellsIndex in drawCellsIndices)
