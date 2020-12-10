@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Grid : MonoBehaviour
@@ -18,8 +19,8 @@ public class Grid : MonoBehaviour
     public int CellSize => cellSize;
     public Vector2Int GridSize => gridSize;
     
-    public HashSet<(int,int)> ClosestPoints { get; private set; }
-    public HashSet<(int,int)> SetPoints { get; private set; }
+    public HashSet<(int x,int y)> ClosestPoints { get; private set; }
+    public HashSet<(int x,int y)> SetPoints { get; private set; }
     
     private Dictionary<(int x,int y),Vector2> gridPoints;
     private Bounds gridBounds;
@@ -116,6 +117,7 @@ public class Grid : MonoBehaviour
         if (ClosestPoints.Count>0)
         {
             SetPoints.UnionWith(ClosestPoints);
+            CheckCombo();
             ClosestPoints.Clear();
             gridRenderer.SetVerticesDirty();
             
@@ -138,19 +140,21 @@ public class Grid : MonoBehaviour
             return true;
         }
         
-        bool canBePlaced = false;
+        bool canBePlaced = true;
         var figureCells = figure.DrawCellsIndices;
         
         foreach (var gridCell in gridPoints.Keys)
         {
+            canBePlaced = true;
             for (int i = 0; i < figureCells.Count; i++)
             {
                 (int x,int y) figureCellInGrid = (gridCell.x + figureCells[i].x, gridCell.y + figureCells[i].y);
-                if(figureCellInGrid.x>gridSize.x-1 || figureCellInGrid.y>gridSize.y-1 || SetPoints.Contains(figureCellInGrid))
+                if (figureCellInGrid.x > gridSize.x - 1 || figureCellInGrid.y > gridSize.y - 1 ||
+                    SetPoints.Contains(figureCellInGrid))
+                {
+                    canBePlaced = false;
                     break;
-
-                if (i == figureCells.Count - 1)
-                    canBePlaced = true;
+                }
             }
             
             if(canBePlaced)
@@ -159,5 +163,79 @@ public class Grid : MonoBehaviour
 
         figure.Interactable = canBePlaced;
         return canBePlaced;
+    }
+
+    private void CheckCombo()
+    {
+        var columnsForComboCheck = ClosestPoints.Select(cell => cell.x).Distinct();
+        var rowsForComboCheck = ClosestPoints.Select(cell => cell.y).Distinct();
+        
+        HashSet<(int x, int y)> cellsSet = new HashSet<(int x, int y)>();
+        foreach (var columnIndex in columnsForComboCheck)
+        {
+            cellsSet.Clear();
+            for (int y = 0; y < gridSize.y; y++)
+            {
+                if(!SetPoints.Contains((columnIndex,y)))
+                    break;
+
+                cellsSet.Add((columnIndex, y));
+            }
+            
+            if(cellsSet.Count==gridSize.y)
+                SetPoints.ExceptWith(cellsSet);
+        }
+        
+        foreach (var rowIndex in rowsForComboCheck)
+        {
+            cellsSet.Clear();
+            for (int x = 0; x < gridSize.x; x++)
+            {
+                if(!SetPoints.Contains((x,rowIndex)))
+                    break;
+
+                cellsSet.Add((x, rowIndex));
+            }
+            
+            if(cellsSet.Count==gridSize.x)
+                SetPoints.ExceptWith(cellsSet);
+        }
+
+        int cubeSize = 3;
+        HashSet<(int x, int y)> figureOverlapedCubes = new HashSet<(int x, int y)>();
+
+        foreach (var point in ClosestPoints)
+        {
+            var cubeCornerX = point.x / cubeSize * cubeSize;
+            var cubeCornerY = point.y / cubeSize * cubeSize;
+            figureOverlapedCubes.Add((cubeCornerX, cubeCornerY));
+        }
+
+        foreach (var cubeCorner in figureOverlapedCubes)
+        {
+            cellsSet.Clear();
+            var cubeNotFullyFilled =false;
+            
+            for (int y = 0; y < cubeSize; y++)
+            {
+                for (int x = 0; x < cubeSize; x++)
+                {
+                    (int x, int y) cubeCellInGrid = (cubeCorner.x + x, cubeCorner.y + y);
+                    if (!SetPoints.Contains(cubeCellInGrid))
+                    {
+                        cubeNotFullyFilled = true;
+                        break;
+                    }
+
+                    cellsSet.Add(cubeCellInGrid);
+                }
+                
+                if(cubeNotFullyFilled)
+                    break;
+            }
+            
+            if(cellsSet.Count==cubeSize*cubeSize)
+                SetPoints.ExceptWith(cellsSet);
+        }
     }
 }
