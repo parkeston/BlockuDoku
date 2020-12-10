@@ -18,7 +18,7 @@ public class Grid : MonoBehaviour
     public HashSet<(int,int)> ClosestPoints { get; private set; }
     public HashSet<(int,int)> SetPoints { get; private set; }
     
-    private Dictionary<(int,int),Vector2> gridPoints;
+    private Dictionary<(int x,int y),Vector2> gridPoints;
     private Bounds gridBounds;
 
     private  void OnValidate()
@@ -67,6 +67,9 @@ public class Grid : MonoBehaviour
 
     private void UpdateGridDetectionOnDrag(Figure figure)
     {
+        if(!figure.Interactable)
+            return;
+        
         var figureBounds = figure.Bounds;
         //shrink bounds of figure to it's center points to easier stack it on grid edges
         figureBounds.Expand(new Vector3(-1,-1,0)*cellSize*gridRenderer.canvas.scaleFactor);
@@ -104,7 +107,7 @@ public class Grid : MonoBehaviour
             gridRenderer.SetVerticesDirty();
         }
     }
-    
+
     private void UpdateGridDetectionOnDragEnd(Figure figure)
     { 
         if (ClosestPoints.Count>0)
@@ -114,6 +117,40 @@ public class Grid : MonoBehaviour
             gridRenderer.SetVerticesDirty();
             
             figuresPool.DisposeFigure(figure);
+            
+            foreach (var currentFigure in figuresPool.CurrentFigures)
+                CheckFigurePlacementAbility(currentFigure);
         }
+    }
+
+    private void CheckFigurePlacementAbility(Figure figure)
+    {
+        //if less than half of grid set, skip actual check
+        if (SetPoints.Count < gridSize.x * gridSize.y / 2)
+        {
+            figure.Interactable = true;
+            return;
+        }
+        
+        bool canBePlaced = false;
+        var figureCells = figure.DrawCellsIndices;
+        
+        foreach (var gridCell in gridPoints.Keys)
+        {
+            for (int i = 0; i < figureCells.Count; i++)
+            {
+                (int x,int y) figureCellInGrid = (gridCell.x + figureCells[i].x, gridCell.y + figureCells[i].y);
+                if(figureCellInGrid.x>gridSize.x-1 || figureCellInGrid.y>gridSize.y-1 || SetPoints.Contains(figureCellInGrid))
+                    break;
+
+                if (i == figureCells.Count - 1)
+                    canBePlaced = true;
+            }
+            
+            if(canBePlaced)
+                break;
+        }
+
+        figure.Interactable = canBePlaced;
     }
 }

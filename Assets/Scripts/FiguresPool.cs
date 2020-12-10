@@ -9,12 +9,12 @@ public class FiguresPool : MonoBehaviour
     [SerializeField] private Figure[] figurePrefabs;
     
     private List<Figure> figuresPool;
-    private List<Figure> currentFigures;
+    public List<Figure> CurrentFigures { get; private set; }
     
     private void Awake()
     {
         figuresPool = new List<Figure>();
-        currentFigures = new List<Figure>();
+        CurrentFigures = new List<Figure>();
 
         int k = 0;
         for (int i = 0; i <figurePrefabs.Length; i++)
@@ -40,7 +40,7 @@ public class FiguresPool : MonoBehaviour
             int index = Random.Range(0, figuresPool.Count); //add unique randomizing instead of removing picked for current set?
             Figure figure = figuresPool[index];
             figure.gameObject.SetActive(true);
-            currentFigures.Add(figure);
+            CurrentFigures.Add(figure);
             figuresPool.RemoveAt(index);
         }
 
@@ -56,10 +56,10 @@ public class FiguresPool : MonoBehaviour
     public void DisposeFigure(Figure figure)
     {
         figure.gameObject.SetActive(false);
-        currentFigures.Remove(figure);
+        CurrentFigures.Remove(figure);
         figuresPool.Add(figure);
 
-        if (currentFigures.Count==0)
+        if (CurrentFigures.Count==0)
             GetFigureSet(3);
     }
 }

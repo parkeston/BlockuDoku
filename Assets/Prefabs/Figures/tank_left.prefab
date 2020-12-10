@@ -60,6 +60,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 5339043979615889402}
+  figureRenderer: {fileID: 5339043979615889381}
+  figureMover: {fileID: 5339043979615889383}
   cellSize: 100
   drawCellsIndices:
   - {x: 1, y: 0}
@@ -79,13 +81,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.25943398, g: 0.478861, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   figure: {fileID: 5339043979615889382}
   thickness: 2
   lineColor:
     serializedVersion: 2
     rgba: 4278190080
+  bgColor:
+    serializedVersion: 2
+    rgba: 4294933058
 --- !u!114 &5339043979615889383
 MonoBehaviour:
   m_ObjectHideFlags: 0

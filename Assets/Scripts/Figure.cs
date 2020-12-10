@@ -6,6 +6,7 @@ using UnityEngine;
 public class Figure : MonoBehaviour
 {
     [SerializeField] private RectTransform rectTransform;
+    [SerializeField] private FigureRenderer figureRenderer;
     
     [Space]
     [SerializeField] private int cellSize = 100;
@@ -28,6 +29,18 @@ public class Figure : MonoBehaviour
         }
     }
 
+    private bool interactable;
+
+    public bool Interactable
+    {
+        get => interactable;
+        set
+        {
+            interactable = value;
+            figureRenderer.color = value ? Color.white : new Color(1, 1, 1, 0.7f);
+        }
+    }
+
     private void OnValidate()
     {
         float desiredWidth = (drawCellsIndices.Max(cell => cell.x) +1)* cellSize;
@@ -43,6 +56,7 @@ public class Figure : MonoBehaviour
     private void Awake()
     {
         LocalFigurePoints = new List<Vector2>();
+        Interactable = true;
     }
 
     private void Start()

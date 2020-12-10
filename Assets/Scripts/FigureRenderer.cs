@@ -6,11 +6,17 @@ public class FigureRenderer : Graphic
     [Space]
     [SerializeField] private Figure figure; 
     [SerializeField] private float thickness; 
+    
+    [Space]
     [SerializeField] private Color32 lineColor;
+    [SerializeField] private Color32 bgColor;
 
     private Vector2 corner;
     private float distance;
     private float cellSize;
+
+    private Color32 tintedBgColor;
+    private Color32 tintedLineColor;
     
     protected override void OnPopulateMesh(VertexHelper vh)
     {
@@ -20,6 +26,9 @@ public class FigureRenderer : Graphic
         corner = new Vector2(r.x,r.y);
         distance = Mathf.Sqrt((thickness*thickness)/2);
         cellSize = figure.CellSize;
+
+        tintedBgColor = bgColor * color;
+        tintedLineColor = lineColor * color;
 
         int count = 0;
         foreach (var cellsIndex in figure.DrawCellsIndices)
@@ -33,16 +42,16 @@ public class FigureRenderer : Graphic
     {
         float xPos = cellSize * x;
         float yPos = cellSize * y;
+
+        vh.AddVert(new Vector3(corner.x+xPos, corner.y+yPos), tintedLineColor, Vector2.zero);
+        vh.AddVert(new Vector3(corner.x+xPos, corner.y+yPos+cellSize), tintedLineColor,  Vector2.zero);
+        vh.AddVert(new Vector3(corner.x+xPos+cellSize, corner.y+yPos+cellSize), tintedLineColor,  Vector2.zero);
+        vh.AddVert(new Vector3(corner.x+xPos+cellSize, corner.y+yPos), tintedLineColor,  Vector2.zero);
         
-        vh.AddVert(new Vector3(corner.x+xPos, corner.y+yPos), lineColor, Vector2.zero);
-        vh.AddVert(new Vector3(corner.x+xPos, corner.y+yPos+cellSize), lineColor,  Vector2.zero);
-        vh.AddVert(new Vector3(corner.x+xPos+cellSize, corner.y+yPos+cellSize), lineColor,  Vector2.zero);
-        vh.AddVert(new Vector3(corner.x+xPos+cellSize, corner.y+yPos), lineColor,  Vector2.zero);
-        
-        vh.AddVert(new Vector3(corner.x+xPos+distance,corner.y+yPos+distance),color, Vector2.zero);
-        vh.AddVert(new Vector3(corner.x+xPos+distance,corner.y+yPos+(cellSize-distance)),color, Vector2.zero);
-        vh.AddVert(new Vector3(corner.x+xPos+(cellSize-distance),corner.y+yPos+(cellSize-distance)),color, Vector2.zero);
-        vh.AddVert(new Vector3(corner.x+xPos+(cellSize-distance),corner.y+yPos+distance),color, Vector2.zero);
+        vh.AddVert(new Vector3(corner.x+xPos+distance,corner.y+yPos+distance),tintedBgColor, Vector2.zero);
+        vh.AddVert(new Vector3(corner.x+xPos+distance,corner.y+yPos+(cellSize-distance)),tintedBgColor, Vector2.zero);
+        vh.AddVert(new Vector3(corner.x+xPos+(cellSize-distance),corner.y+yPos+(cellSize-distance)),tintedBgColor, Vector2.zero);
+        vh.AddVert(new Vector3(corner.x+xPos+(cellSize-distance),corner.y+yPos+distance),tintedBgColor, Vector2.zero);
 
         int offset = index * 8; //each cell has 8 vertices
         
