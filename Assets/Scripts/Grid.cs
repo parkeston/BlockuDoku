@@ -69,7 +69,7 @@ public class Grid : MonoBehaviour
     {
         var figureBounds = figure.Bounds;
         //shrink bounds of figure to it's center points to easier stack it on grid edges
-        figureBounds.Expand(new Vector3(-1,-1,0)*cellSize);
+        figureBounds.Expand(new Vector3(-1,-1,0)*cellSize*gridRenderer.canvas.scaleFactor);
         
         if (gridBounds.Contains(figureBounds.min) && gridBounds.Contains(figureBounds.max))
         {
