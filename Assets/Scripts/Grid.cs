@@ -171,6 +171,8 @@ public class Grid : MonoBehaviour
         var rowsForComboCheck = ClosestPoints.Select(cell => cell.y).Distinct();
         
         HashSet<(int x, int y)> cellsSet = new HashSet<(int x, int y)>();
+        HashSet<(int x, int y)> totalComboSet = new HashSet<(int x, int y)>();
+        
         foreach (var columnIndex in columnsForComboCheck)
         {
             cellsSet.Clear();
@@ -183,7 +185,7 @@ public class Grid : MonoBehaviour
             }
             
             if(cellsSet.Count==gridSize.y)
-                SetPoints.ExceptWith(cellsSet);
+                totalComboSet.UnionWith(cellsSet);
         }
         
         foreach (var rowIndex in rowsForComboCheck)
@@ -198,7 +200,7 @@ public class Grid : MonoBehaviour
             }
             
             if(cellsSet.Count==gridSize.x)
-                SetPoints.ExceptWith(cellsSet);
+                totalComboSet.UnionWith(cellsSet);
         }
 
         int cubeSize = 3;
@@ -235,7 +237,9 @@ public class Grid : MonoBehaviour
             }
             
             if(cellsSet.Count==cubeSize*cubeSize)
-                SetPoints.ExceptWith(cellsSet);
+                totalComboSet.UnionWith(cellsSet);
         }
+        
+        SetPoints.ExceptWith(totalComboSet);
     }
 }
