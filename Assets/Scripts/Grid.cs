@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
     //todo: refactor
+    [SerializeField] private TMP_Text scorePointsCounter;
+    private int scorePoints;
     [SerializeField] private LoseScreen loseScreen;
     [SerializeField] private FiguresPool figuresPool;
     
@@ -241,5 +244,7 @@ public class Grid : MonoBehaviour
         }
         
         SetPoints.ExceptWith(totalComboSet);
+        scorePoints += totalComboSet.Count * 2;
+        scorePointsCounter.text = scorePoints.ToString();
     }
 }
