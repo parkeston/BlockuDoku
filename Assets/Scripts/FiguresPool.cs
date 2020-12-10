@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FiguresPool : MonoBehaviour
 {
+    [SerializeField] private LayoutGroup layoutGroup;
     [SerializeField] private Figure[] figurePrefabs;
     
     private List<Figure> figuresPool;
     private List<Figure> currentFigures;
-
-    private int currentFiguresCount;
     
     private void Awake()
     {
@@ -30,37 +31,35 @@ public class FiguresPool : MonoBehaviour
         GetFigureSet(3);
     }
 
-    public void GetFigureSet(int figuresInSet)
+    private void GetFigureSet(int figuresInSet)
     {
-        currentFiguresCount = figuresInSet;
+        layoutGroup.enabled = true;
         
         for (int i = 0; i < figuresInSet; i++)
         {
-            int index = Random.Range(0, figuresPool.Count);
+            int index = Random.Range(0, figuresPool.Count); //add unique randomizing instead of removing picked for current set?
             Figure figure = figuresPool[index];
             figure.gameObject.SetActive(true);
-            figure.GetComponent<FigureRenderer>().enabled = true; //temp
             currentFigures.Add(figure);
             figuresPool.RemoveAt(index);
         }
+
+        StartCoroutine(DisableLayoutGroupOnLayoutUpdate());
+    }
+
+    private IEnumerator DisableLayoutGroupOnLayoutUpdate()
+    {
+        yield return new WaitForEndOfFrame();
+        layoutGroup.enabled = false;
     }
 
     public void DisposeFigure(Figure figure)
     {
-        currentFiguresCount--;
-        //figure.gameObject.SetActive(false); todo: do not disable figure, horizontal layout broken, make own horizontals layout!
-        figure.GetComponent<FigureRenderer>().enabled = false;
-        //currentFigures.Remove(figure);
-        //figuresPool.Add(figure);
+        figure.gameObject.SetActive(false);
+        currentFigures.Remove(figure);
+        figuresPool.Add(figure);
 
-        if (currentFiguresCount == 0)
-        {
-            foreach (var currentFigure in currentFigures)
-                currentFigure.gameObject.SetActive(false);
-            
-            figuresPool.AddRange(currentFigures);
-            currentFigures.Clear();
+        if (currentFigures.Count==0)
             GetFigureSet(3);
-        }
     }
 }

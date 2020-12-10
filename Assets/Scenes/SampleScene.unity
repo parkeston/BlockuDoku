@@ -536,6 +536,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fac25e628f96e47e58b0f9433dbbf84f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layoutGroup: {fileID: 1583554702}
   figurePrefabs:
   - {fileID: 5339043979615889382, guid: 69166ac424e2748ea8eda79843b42cd7, type: 3}
   - {fileID: 5339043979615889382, guid: 54c546124b44b4003aebcc53254e0b86, type: 3}
