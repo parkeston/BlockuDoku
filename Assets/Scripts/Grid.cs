@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
+    //todo: refactor
+    [SerializeField] private LoseScreen loseScreen;
     [SerializeField] private FiguresPool figuresPool;
+    
     [SerializeField] private RectTransform rectTransform;
     [SerializeField] private GridRenderer gridRenderer;
     
@@ -117,19 +120,22 @@ public class Grid : MonoBehaviour
             gridRenderer.SetVerticesDirty();
             
             figuresPool.DisposeFigure(figure);
-            
+
+            bool anyInteractable = false;
             foreach (var currentFigure in figuresPool.CurrentFigures)
-                CheckFigurePlacementAbility(currentFigure);
+                anyInteractable|= CheckFigurePlacementAbility(currentFigure);
+            if(!anyInteractable)
+                loseScreen.Show(200.ToString());
         }
     }
 
-    private void CheckFigurePlacementAbility(Figure figure)
+    private bool CheckFigurePlacementAbility(Figure figure)
     {
         //if less than half of grid set, skip actual check
         if (SetPoints.Count < gridSize.x * gridSize.y / 2)
         {
             figure.Interactable = true;
-            return;
+            return true;
         }
         
         bool canBePlaced = false;
@@ -152,5 +158,6 @@ public class Grid : MonoBehaviour
         }
 
         figure.Interactable = canBePlaced;
+        return canBePlaced;
     }
 }
