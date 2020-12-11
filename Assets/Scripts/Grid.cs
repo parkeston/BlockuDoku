@@ -131,8 +131,8 @@ public class Grid : MonoBehaviour
             SetPoints.UnionWith(ClosestPoints);
             ConsumeComboSet();
             ClosestPoints.Clear();
+            gridRenderer.PlayComboAnimation(ComboHighlights);
             ComboHighlights.Clear();
-            gridRenderer.SetVerticesDirty();
             
             figuresPool.DisposeFigure(figure);
 

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class GridRenderer : Graphic
@@ -19,6 +21,11 @@ public class GridRenderer : Graphic
     private Vector2 corner;
     private float distance;
     private float cellSize;
+    private int offset;
+    
+    private HashSet<(int x, int y)> comboCells = new HashSet<(int x, int y)>();
+    private Color32 comboBgColor;
+    private float comboDistance;
 
     protected override void OnPopulateMesh(VertexHelper vh)
     {
@@ -29,13 +36,12 @@ public class GridRenderer : Graphic
         distance = Mathf.Sqrt((thickness*thickness)/2);
         cellSize = grid.CellSize;
         
-        int count = 0;
+        offset = 0;
         for (int y = 0; y < grid.GridSize.y; y++)
         {
             for (int x = 0; x < grid.GridSize.x; x++)
             {
-                DrawCell(x,y,count,vh);
-                count++;
+                DrawCell(x,y,vh);
             }
         }
     }
@@ -53,7 +59,7 @@ public class GridRenderer : Graphic
     //todo: maybe persist line thickness on diff resolutions?
     //todo: animations & effects
 
-    private void DrawCell(int x, int y, int index, VertexHelper vh)
+    private void DrawCell(int x, int y, VertexHelper vh)
     {
         bool diffColorX = x >= diffStartingX && x < diffStartingX + diffWidth;
         bool diffColorY = y >= diffStartingY && y < diffStartingY + diffHeight;
@@ -79,7 +85,13 @@ public class GridRenderer : Graphic
         vh.AddVert(new Vector3(corner.x+xPos+(cellSize-distance),corner.y+yPos+(cellSize-distance)),bgColor, Vector2.zero);
         vh.AddVert(new Vector3(corner.x+xPos+(cellSize-distance),corner.y+yPos+distance),bgColor, Vector2.zero);
 
-        int offset = index * 8; //each cell has 8 vertices
+        if (comboCells.Contains((x, y)))
+        {
+            vh.AddVert(new Vector3(corner.x+xPos+comboDistance,corner.y+yPos+comboDistance),comboBgColor, Vector2.zero);
+            vh.AddVert(new Vector3(corner.x+xPos+comboDistance,corner.y+yPos+(cellSize-comboDistance)),comboBgColor, Vector2.zero);
+            vh.AddVert(new Vector3(corner.x+xPos+(cellSize-comboDistance),corner.y+yPos+(cellSize-comboDistance)),comboBgColor, Vector2.zero);
+            vh.AddVert(new Vector3(corner.x+xPos+(cellSize-comboDistance),corner.y+yPos+comboDistance),comboBgColor, Vector2.zero);
+        }
         
         vh.AddTriangle(offset+0,offset+1,offset+5);
         vh.AddTriangle(offset+5,offset+4,offset+0);
@@ -93,8 +105,60 @@ public class GridRenderer : Graphic
         vh.AddTriangle(offset+3,offset+0,offset+4);
         vh.AddTriangle(offset+4,offset+7,offset+3);
         
-        //cell bg mesh, add additional vertices for nor vertex color blending? (blending gives antialiasing effect?)
         vh.AddTriangle(offset+4,offset+5,offset+6);
         vh.AddTriangle(offset+6,offset+7,offset+4);
+
+        if (comboCells.Contains((x, y)))
+        {
+            vh.AddTriangle(offset + 8, offset + 9, offset + 10);
+            vh.AddTriangle(offset + 10, offset + 11, offset + 8);
+            offset += 12;
+        }
+        else
+            offset += 8;
+    }
+    
+    public void PlayComboAnimation(HashSet<(int x, int y)> comboCells)
+    {
+        if (comboCells.Count == 0)
+        {
+            SetVerticesDirty();
+            return;
+        }
+
+        this.comboCells.UnionWith(comboCells);
+        comboBgColor = setBackgroundColor;
+        comboDistance = Mathf.Sqrt((thickness*thickness)/2);
+        
+        StartCoroutine(DissolveAnimation());
+    }
+
+    private IEnumerator DissolveAnimation()
+    {
+        float colorChangeDuration = 0.15f;
+        float dissolveDuration = 0.25f;
+
+        float startingDistance = Mathf.Sqrt((thickness*thickness)/2);
+
+        float t = 0;
+        while (t<=1)
+        {
+            t += Time.deltaTime * 1 / colorChangeDuration;
+            comboBgColor = Color.Lerp(setBackgroundColor,color,t);
+            SetVerticesDirty();
+            yield return null;
+        }
+        
+        t = 0;
+        while (t<=1)
+        {
+            t += Time.deltaTime * 1 / dissolveDuration;
+            comboDistance = Mathf.Lerp(startingDistance, cellSize / 2, t);
+            SetVerticesDirty();
+            yield return null;
+        }
+        
+        comboCells.Clear();
+        SetVerticesDirty();
     }
 }
