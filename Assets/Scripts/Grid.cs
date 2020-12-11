@@ -124,24 +124,42 @@ public class Grid : MonoBehaviour
         }
     }
 
-    private void UpdateGridDetectionOnDragEnd(Figure figure)
+    private bool UpdateGridDetectionOnDragEnd(Figure figure)
     { 
         if (ClosestPoints.Count>0)
         {
-            SetPoints.UnionWith(ClosestPoints);
-            ConsumeComboSet();
-            ClosestPoints.Clear();
-            gridRenderer.PlayComboAnimation(ComboHighlights);
-            ComboHighlights.Clear();
-            
-            figuresPool.DisposeFigure(figure);
-
-            bool anyInteractable = false;
-            foreach (var currentFigure in figuresPool.CurrentFigures)
-                anyInteractable|= CheckFigurePlacementAbility(currentFigure);
-            if(!anyInteractable)
-                loseScreen.Show(scorePoints.ToString());
+            Vector3[] points = new Vector3[ClosestPoints.Count];
+            int i = 0;
+            foreach (var closestPoint in ClosestPoints)
+            {
+                points[i] = gridPoints[closestPoint];
+                i++;
+            }
+            figure.MoveToGridClosestPoints(points,()=>UpdateGridLayout(figure));
+            return true;
         }
+        else
+        {
+            figure.Shrink();
+            return false;
+        }
+    }
+
+    private void UpdateGridLayout(Figure figure)
+    {
+        SetPoints.UnionWith(ClosestPoints);
+        ConsumeComboSet();
+        ClosestPoints.Clear();
+        gridRenderer.PlayComboAnimation(ComboHighlights);
+        ComboHighlights.Clear();
+            
+        figuresPool.DisposeFigure(figure);
+
+        bool anyInteractable = false;
+        foreach (var currentFigure in figuresPool.CurrentFigures)
+            anyInteractable|= CheckFigurePlacementAbility(currentFigure);
+        if(!anyInteractable)
+            loseScreen.Show(scorePoints.ToString());
     }
 
     private bool CheckFigurePlacementAbility(Figure figure)

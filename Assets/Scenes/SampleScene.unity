@@ -635,9 +635,6 @@ MonoBehaviour:
   backGround2:
     serializedVersion: 2
     rgba: 4294308075
-  lineColor:
-    serializedVersion: 2
-    rgba: 4284371008
   detectionBackgroundColor:
     serializedVersion: 2
     rgba: 4291348680

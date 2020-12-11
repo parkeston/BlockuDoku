@@ -13,7 +13,9 @@ public class FigureRenderer : Graphic
 
     private Vector2 corner;
     private float distance;
-    private float cellSize;
+    private int figureCellSize;
+    private int currentCellSize;
+    private float cellInsetPercentage = 1f;
 
     private Color32 tintedBgColor;
     private Color32 tintedLineColor;
@@ -25,7 +27,8 @@ public class FigureRenderer : Graphic
         var r = GetPixelAdjustedRect();
         corner = new Vector2(r.x,r.y);
         distance = Mathf.Sqrt((thickness*thickness)/2);
-        cellSize = figure.CellSize;
+        figureCellSize = figure.CellSize;
+        currentCellSize = (int)(figureCellSize * cellInsetPercentage);
 
         tintedBgColor = bgColor * color;
         tintedLineColor = lineColor * color;
@@ -40,18 +43,18 @@ public class FigureRenderer : Graphic
 
     private void DrawCell(int x, int y, int index, VertexHelper vh)
     {
-        float xPos = cellSize * x;
-        float yPos = cellSize * y;
+        float xPos = figureCellSize * x + (figureCellSize - currentCellSize) / 2;
+        float yPos = figureCellSize * y + (figureCellSize - currentCellSize) / 2;
 
         vh.AddVert(new Vector3(corner.x+xPos, corner.y+yPos), tintedLineColor, Vector2.zero);
-        vh.AddVert(new Vector3(corner.x+xPos, corner.y+yPos+cellSize), tintedLineColor,  Vector2.zero);
-        vh.AddVert(new Vector3(corner.x+xPos+cellSize, corner.y+yPos+cellSize), tintedLineColor,  Vector2.zero);
-        vh.AddVert(new Vector3(corner.x+xPos+cellSize, corner.y+yPos), tintedLineColor,  Vector2.zero);
+        vh.AddVert(new Vector3(corner.x+xPos, corner.y+yPos+currentCellSize), tintedLineColor,  Vector2.zero);
+        vh.AddVert(new Vector3(corner.x+xPos+currentCellSize, corner.y+yPos+currentCellSize), tintedLineColor,  Vector2.zero);
+        vh.AddVert(new Vector3(corner.x+xPos+currentCellSize, corner.y+yPos), tintedLineColor,  Vector2.zero);
         
         vh.AddVert(new Vector3(corner.x+xPos+distance,corner.y+yPos+distance),tintedBgColor, Vector2.zero);
-        vh.AddVert(new Vector3(corner.x+xPos+distance,corner.y+yPos+(cellSize-distance)),tintedBgColor, Vector2.zero);
-        vh.AddVert(new Vector3(corner.x+xPos+(cellSize-distance),corner.y+yPos+(cellSize-distance)),tintedBgColor, Vector2.zero);
-        vh.AddVert(new Vector3(corner.x+xPos+(cellSize-distance),corner.y+yPos+distance),tintedBgColor, Vector2.zero);
+        vh.AddVert(new Vector3(corner.x+xPos+distance,corner.y+yPos+(currentCellSize-distance)),tintedBgColor, Vector2.zero);
+        vh.AddVert(new Vector3(corner.x+xPos+(currentCellSize-distance),corner.y+yPos+(currentCellSize-distance)),tintedBgColor, Vector2.zero);
+        vh.AddVert(new Vector3(corner.x+xPos+(currentCellSize-distance),corner.y+yPos+distance),tintedBgColor, Vector2.zero);
 
         int offset = index * 8; //each cell has 8 vertices
         
@@ -70,5 +73,11 @@ public class FigureRenderer : Graphic
         //cell bg mesh, add additional vertices for nor vertex color blending? (blending gives antialiasing effect?)
         vh.AddTriangle(offset+4,offset+5,offset+6);
         vh.AddTriangle(offset+6,offset+7,offset+4);
+    }
+
+    public void SetInset(float insetPercentage)
+    {
+        cellInsetPercentage = Mathf.Clamp01(insetPercentage);
+        SetVerticesDirty();
     }
 }

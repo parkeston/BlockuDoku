@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -17,7 +18,7 @@ public class FigureMover : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     private bool isDragging;
 
     public static event Action<Figure> OnFigureDrag;
-    public static event Action<Figure> OnFigureDragEnded;
+    public static event Predicate<Figure> OnFigureDragEnded;
 
     private void Awake()
     {
@@ -32,6 +33,7 @@ public class FigureMover : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         transform.position = desiredPosition;
 
         isDragging = true;
+        figure.Expand();
     }
     
     public void OnDrag(PointerEventData eventData)
@@ -43,10 +45,10 @@ public class FigureMover : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     
     public void OnPointerUp(PointerEventData eventData)
     {
-        transform.position = startingPosition;
         isDragging = false;
         
-        OnFigureDragEnded?.Invoke(figure);
+        if(!(OnFigureDragEnded?.Invoke(figure)??false)) //if not set to grid
+            transform.position = startingPosition;
     }
 
     private void Update()

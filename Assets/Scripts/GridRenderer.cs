@@ -53,11 +53,6 @@ public class GridRenderer : Graphic
     private int diffStartingY = 3;
     private int diffHeight = 3;
     
-    //todo: fix diff edge line thickness
-    //todo: resolve color blending between line & bg colors (remove or not blending?)
-    //todo: add different line colors per cells, like diff bg colors
-    //todo: maybe persist line thickness on diff resolutions?
-    //todo: animations & effects
 
     private void DrawCell(int x, int y, VertexHelper vh)
     {
