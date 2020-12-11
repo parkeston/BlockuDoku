@@ -140,7 +140,7 @@ public class Grid : MonoBehaviour
             foreach (var currentFigure in figuresPool.CurrentFigures)
                 anyInteractable|= CheckFigurePlacementAbility(currentFigure);
             if(!anyInteractable)
-                loseScreen.Show(200.ToString());
+                loseScreen.Show(scorePoints.ToString());
         }
     }
 
