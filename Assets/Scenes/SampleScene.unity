@@ -641,6 +641,9 @@ MonoBehaviour:
   setBackgroundColor:
     serializedVersion: 2
     rgba: 4294933058
+  setComboBackgroundColor:
+    serializedVersion: 2
+    rgba: 4294939494
 --- !u!222 &1127928474
 CanvasRenderer:
   m_ObjectHideFlags: 0

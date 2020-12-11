@@ -14,6 +14,7 @@ public class GridRenderer : Graphic
     [Space]
     [SerializeField] private Color32 detectionBackgroundColor;
     [SerializeField] private Color32 setBackgroundColor;
+    [SerializeField] private Color32 setComboBackgroundColor;
 
     private Vector2 corner;
     private float distance;
@@ -60,6 +61,8 @@ public class GridRenderer : Graphic
         
         if (grid.ClosestPoints != null && grid.ClosestPoints.Contains((x, y)))
             bgColor = detectionBackgroundColor;
+        else if (grid.ComboHighlights!=null && grid.ComboHighlights.Contains((x,y)))
+            bgColor = setComboBackgroundColor;
         else if (grid.SetPoints != null && grid.SetPoints.Contains((x, y)))
             bgColor = setBackgroundColor;
 

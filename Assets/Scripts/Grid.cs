@@ -24,6 +24,7 @@ public class Grid : MonoBehaviour
     
     public HashSet<(int x,int y)> ClosestPoints { get; private set; }
     public HashSet<(int x,int y)> SetPoints { get; private set; }
+    public HashSet<(int x, int y)> ComboHighlights { get; private set; }
     
     private Dictionary<(int x,int y),Vector2> gridPoints;
     private Bounds gridBounds;
@@ -41,6 +42,7 @@ public class Grid : MonoBehaviour
     {
         ClosestPoints = new HashSet<(int, int)>();
         SetPoints = new HashSet<(int, int)>();
+        ComboHighlights = new HashSet<(int x, int y)>();
         gridPoints = new Dictionary<(int, int), Vector2>();
     }
 
@@ -105,12 +107,19 @@ public class Grid : MonoBehaviour
             }
 
             if (SetPoints.Overlaps(ClosestPoints))
+            {
                 ClosestPoints.Clear();
+                ComboHighlights.Clear();
+            }
+            else
+                UpdateComboSet();
+            
             gridRenderer.SetVerticesDirty();
         }
         else if (ClosestPoints.Count>0)
         {
             ClosestPoints.Clear();
+            ComboHighlights.Clear();
             gridRenderer.SetVerticesDirty();
         }
     }
@@ -120,8 +129,9 @@ public class Grid : MonoBehaviour
         if (ClosestPoints.Count>0)
         {
             SetPoints.UnionWith(ClosestPoints);
-            CheckCombo();
+            ConsumeComboSet();
             ClosestPoints.Clear();
+            ComboHighlights.Clear();
             gridRenderer.SetVerticesDirty();
             
             figuresPool.DisposeFigure(figure);
@@ -168,27 +178,28 @@ public class Grid : MonoBehaviour
         return canBePlaced;
     }
 
-    private void CheckCombo()
+    private void UpdateComboSet()
     {
+        ComboHighlights.Clear();
+        
         var columnsForComboCheck = ClosestPoints.Select(cell => cell.x).Distinct();
         var rowsForComboCheck = ClosestPoints.Select(cell => cell.y).Distinct();
         
         HashSet<(int x, int y)> cellsSet = new HashSet<(int x, int y)>();
-        HashSet<(int x, int y)> totalComboSet = new HashSet<(int x, int y)>();
         
         foreach (var columnIndex in columnsForComboCheck)
         {
             cellsSet.Clear();
             for (int y = 0; y < gridSize.y; y++)
             {
-                if(!SetPoints.Contains((columnIndex,y)))
+                if(!ClosestPoints.Contains((columnIndex,y)) && !SetPoints.Contains((columnIndex,y)))
                     break;
 
                 cellsSet.Add((columnIndex, y));
             }
             
             if(cellsSet.Count==gridSize.y)
-                totalComboSet.UnionWith(cellsSet);
+                ComboHighlights.UnionWith(cellsSet);
         }
         
         foreach (var rowIndex in rowsForComboCheck)
@@ -196,14 +207,14 @@ public class Grid : MonoBehaviour
             cellsSet.Clear();
             for (int x = 0; x < gridSize.x; x++)
             {
-                if(!SetPoints.Contains((x,rowIndex)))
+                if(!ClosestPoints.Contains((x,rowIndex)) && !SetPoints.Contains((x,rowIndex)))
                     break;
 
                 cellsSet.Add((x, rowIndex));
             }
             
             if(cellsSet.Count==gridSize.x)
-                totalComboSet.UnionWith(cellsSet);
+                ComboHighlights.UnionWith(cellsSet);
         }
 
         int cubeSize = 3;
@@ -226,7 +237,7 @@ public class Grid : MonoBehaviour
                 for (int x = 0; x < cubeSize; x++)
                 {
                     (int x, int y) cubeCellInGrid = (cubeCorner.x + x, cubeCorner.y + y);
-                    if (!SetPoints.Contains(cubeCellInGrid))
+                    if (!ClosestPoints.Contains(cubeCellInGrid) && !SetPoints.Contains(cubeCellInGrid))
                     {
                         cubeNotFullyFilled = true;
                         break;
@@ -240,11 +251,14 @@ public class Grid : MonoBehaviour
             }
             
             if(cellsSet.Count==cubeSize*cubeSize)
-                totalComboSet.UnionWith(cellsSet);
+                ComboHighlights.UnionWith(cellsSet);
         }
-        
-        SetPoints.ExceptWith(totalComboSet);
-        scorePoints += totalComboSet.Count * 2;
+    }
+
+    private void ConsumeComboSet()
+    {
+        SetPoints.ExceptWith(ComboHighlights);
+        scorePoints += ComboHighlights.Count * 2;
         scorePointsCounter.text = scorePoints.ToString();
     }
 }
