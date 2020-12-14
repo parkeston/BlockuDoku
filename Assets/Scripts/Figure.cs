@@ -8,6 +8,10 @@ public class Figure : MonoBehaviour
 {
     [SerializeField] private RectTransform rectTransform;
     [SerializeField] private FigureRenderer figureRenderer;
+
+    [Space]
+    [SerializeField] private Color32 activeColor;
+    [SerializeField] private Color32 inActiveColor;
     
     [Space]
     [SerializeField] private int cellSize = 100;
@@ -96,11 +100,20 @@ public class Figure : MonoBehaviour
     }
 
 
-    public void Expand(float duration = 0.2f) => StartCoroutine(ScaleAnimation(0.7f,1.1f,1f,
-        1f,0.8f,duration));
-    public void Shrink(float duration = 0.2f) => StartCoroutine(ScaleAnimation(1,0.6f,0.7f,
-        0.8f,1f,duration));
-    
+    public void Expand(float duration = 0.2f)
+    {
+        figureRenderer.SetBgColor(activeColor);
+        StartCoroutine(ScaleAnimation(0.7f, 1.1f, 1f,
+            1f, 0.8f, duration));
+    }
+
+    public void Shrink(float duration = 0.2f)
+    {
+        figureRenderer.SetBgColor(inActiveColor);
+        StartCoroutine(ScaleAnimation(1, 0.6f, 0.7f,
+            0.8f, 1f, duration));
+    }
+
     private IEnumerator ScaleAnimation(float startingSize, float middleSize, float endingSize, float startingInset,
         float endingInset,float duration)
     {

@@ -61,7 +61,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 5339043979615889402}
   figureRenderer: {fileID: 5339043979615889381}
-  figureMover: {fileID: 5339043979615889383}
+  activeColor:
+    serializedVersion: 2
+    rgba: 4294934592
+  inActiveColor:
+    serializedVersion: 2
+    rgba: 4290732080
   cellSize: 100
   drawCellsIndices:
   - {x: 0, y: 2}

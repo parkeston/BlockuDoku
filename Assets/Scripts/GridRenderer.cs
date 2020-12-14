@@ -15,7 +15,8 @@ public class GridRenderer : Graphic
     
     [Space]
     [SerializeField] private Color32 detectionBackgroundColor;
-    [SerializeField] private Color32 setBackgroundColor;
+    [SerializeField] private Color32 setBackgroundColorLow;
+    [SerializeField] private Color32 setBackgroundColorHigh;
     [SerializeField] private Color32 setComboBackgroundColor;
 
     private Vector2 corner;
@@ -65,7 +66,7 @@ public class GridRenderer : Graphic
         else if (grid.ComboHighlights!=null && grid.ComboHighlights.Contains((x,y)))
             bgColor = setComboBackgroundColor;
         else if (grid.SetPoints != null && grid.SetPoints.Contains((x, y)))
-            bgColor = setBackgroundColor;
+            bgColor = Color32.Lerp(setBackgroundColorLow,setBackgroundColorHigh, (float)y/(grid.GridSize.y-1));
 
         float xPos = cellSize * x;
         float yPos = cellSize * y;
@@ -122,7 +123,7 @@ public class GridRenderer : Graphic
         }
 
         this.comboCells.UnionWith(comboCells);
-        comboBgColor = setBackgroundColor;
+        comboBgColor = setComboBackgroundColor;
         comboDistance = Mathf.Sqrt((thickness*thickness)/2);
         
         StartCoroutine(DissolveAnimation());
@@ -139,7 +140,7 @@ public class GridRenderer : Graphic
         while (t<=1)
         {
             t += Time.deltaTime * 1 / colorChangeDuration;
-            comboBgColor = Color.Lerp(setBackgroundColor,color,t);
+            comboBgColor = Color.Lerp(setComboBackgroundColor,color,t);
             SetVerticesDirty();
             yield return null;
         }

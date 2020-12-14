@@ -87,6 +87,11 @@ public class FigureRenderer : Graphic
         SetVerticesDirty();
     }
 
+    public void SetBgColor(Color32 color)
+    {
+        bgColor = color;
+    }
+
     
     public void PlayRevealAnimation()
     {
