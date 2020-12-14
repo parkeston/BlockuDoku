@@ -8,7 +8,7 @@ public class Grid : MonoBehaviour
 {
     //todo: refactor
     [SerializeField] private PointsPopuper pointsPopuper;
-    [SerializeField] private TMP_Text scorePointsCounter;
+    [SerializeField] private PointsTimer scorePointsCounter;
     private int scorePoints;
     [SerializeField] private LoseScreen loseScreen;
     [SerializeField] private FiguresPool figuresPool;
@@ -272,13 +272,17 @@ public class Grid : MonoBehaviour
 
     private void ConsumeComboSet()
     {
-        if(ComboHighlights.Count==0)
+        if (ComboHighlights.Count == 0)
+        {
+            scorePoints += ClosestPoints.Count;
+            scorePointsCounter.SetValue(scorePoints);
             return;
+        }
         
         SetPoints.ExceptWith(ComboHighlights);
         var earnedPoints = ComboHighlights.Count * 2;
         scorePoints += earnedPoints;
-        scorePointsCounter.text = scorePoints.ToString();
+        scorePointsCounter.SetValue(scorePoints);
 
         if (ComboHighlights.Count <= 9) //not a combo
         {
