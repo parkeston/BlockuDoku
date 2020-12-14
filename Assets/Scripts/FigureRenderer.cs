@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class FigureRenderer : Graphic
@@ -20,6 +22,8 @@ public class FigureRenderer : Graphic
     private Color32 tintedBgColor;
     private Color32 tintedLineColor;
     
+    private List<Vector2> cellsRandom = new List<Vector2>();
+
     protected override void OnPopulateMesh(VertexHelper vh)
     {
         vh.Clear();
@@ -34,17 +38,19 @@ public class FigureRenderer : Graphic
         tintedLineColor = lineColor * color;
 
         int count = 0;
-        foreach (var cellsIndex in figure.DrawCellsIndices)
+        bool revealing = cellsRandom.Count > 0;
+        for(int i=0;i<figure.DrawCellsIndices.Count;i++)
         {
-            DrawCell(cellsIndex.x,cellsIndex.y,count,vh);
+            var cell = revealing ? cellsRandom[i] : figure.DrawCellsIndices[i];
+            DrawCell(cell.x,cell.y,count,vh);
             count++;
         }
     }
 
-    private void DrawCell(int x, int y, int index, VertexHelper vh)
+    private void DrawCell(float x, float y, int index, VertexHelper vh)
     {
-        float xPos = figureCellSize * x + (figureCellSize - currentCellSize) / 2;
-        float yPos = figureCellSize * y + (figureCellSize - currentCellSize) / 2;
+        float xPos = figureCellSize * x + (figureCellSize - currentCellSize) / 2f;
+        float yPos = figureCellSize * y + (figureCellSize - currentCellSize) / 2f;
 
         vh.AddVert(new Vector3(corner.x+xPos, corner.y+yPos), tintedLineColor, Vector2.zero);
         vh.AddVert(new Vector3(corner.x+xPos, corner.y+yPos+currentCellSize), tintedLineColor,  Vector2.zero);
@@ -78,6 +84,36 @@ public class FigureRenderer : Graphic
     public void SetInset(float insetPercentage)
     {
         cellInsetPercentage = Mathf.Clamp01(insetPercentage);
+        SetVerticesDirty();
+    }
+
+    
+    public void PlayRevealAnimation()
+    {
+        cellsRandom.Clear();
+        for(int i=0;i<figure.DrawCellsIndices.Count;i++)
+            cellsRandom.Add(new Vector2(Random.Range(0,3),Random.Range(0,3)));
+
+        StartCoroutine(RevealAnimation(0.5f));
+    }
+
+    private IEnumerator RevealAnimation(float duration)
+    {
+        float t = 0;
+        while (t<=1)
+        {
+            for (int i = 0; i < cellsRandom.Count; i++)
+            {
+                cellsRandom[i] = Vector2.Lerp(cellsRandom[i],figure.DrawCellsIndices[i],t);
+            }
+
+            t += Time.deltaTime * 1 / duration;
+            
+            SetVerticesDirty();
+            yield return null;
+        }
+        
+        cellsRandom.Clear();
         SetVerticesDirty();
     }
 }

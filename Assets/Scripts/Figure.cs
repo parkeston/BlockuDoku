@@ -62,8 +62,8 @@ public class Figure : MonoBehaviour
 
     private void OnEnable()
     {
-        transform.localScale = Vector3.one * 0.7f;
-        figureRenderer.SetInset(1);
+        figureRenderer.PlayRevealAnimation();
+        Shrink(0.5f);
     }
 
     private void Start()
@@ -96,13 +96,13 @@ public class Figure : MonoBehaviour
     }
 
 
-    public void Expand() => StartCoroutine(ScaleAnimation(0.7f,1.1f,1f,
-        1f,0.8f));
-    public void Shrink() => StartCoroutine(ScaleAnimation(1,0.6f,0.7f,
-        0.8f,1f));
+    public void Expand(float duration = 0.2f) => StartCoroutine(ScaleAnimation(0.7f,1.1f,1f,
+        1f,0.8f,duration));
+    public void Shrink(float duration = 0.2f) => StartCoroutine(ScaleAnimation(1,0.6f,0.7f,
+        0.8f,1f,duration));
     
     private IEnumerator ScaleAnimation(float startingSize, float middleSize, float endingSize, float startingInset,
-        float endingInset,float duration = 0.2f)
+        float endingInset,float duration)
     {
         Vector3 startingScale = Vector3.one*startingSize;
         Vector3 middleScale = Vector3.one * middleSize;
