@@ -7,6 +7,7 @@ using UnityEngine;
 public class Grid : MonoBehaviour
 {
     //todo: refactor
+    [SerializeField] private PointsPopuper pointsPopuper;
     [SerializeField] private TMP_Text scorePointsCounter;
     private int scorePoints;
     [SerializeField] private LoseScreen loseScreen;
@@ -128,14 +129,10 @@ public class Grid : MonoBehaviour
     { 
         if (ClosestPoints.Count>0)
         {
-            Vector3[] points = new Vector3[ClosestPoints.Count];
-            int i = 0;
+            var closestPointsBounds = new Bounds(gridPoints[ClosestPoints.First()], Vector3.one);
             foreach (var closestPoint in ClosestPoints)
-            {
-                points[i] = gridPoints[closestPoint];
-                i++;
-            }
-            figure.MoveToGridClosestPoints(points,()=>UpdateGridLayout(figure));
+                closestPointsBounds.Encapsulate(gridPoints[closestPoint]);
+            figure.MoveToGridClosestPoints(closestPointsBounds.center,()=>UpdateGridLayout(figure));
             return true;
         }
         else
@@ -275,8 +272,27 @@ public class Grid : MonoBehaviour
 
     private void ConsumeComboSet()
     {
+        if(ComboHighlights.Count==0)
+            return;
+        
         SetPoints.ExceptWith(ComboHighlights);
-        scorePoints += ComboHighlights.Count * 2;
+        var earnedPoints = ComboHighlights.Count * 2;
+        scorePoints += earnedPoints;
         scorePointsCounter.text = scorePoints.ToString();
+
+        if (ComboHighlights.Count <= 9) //not a combo
+        {
+            var comboBounds = new Bounds(gridPoints[ComboHighlights.First()], Vector3.one);
+            foreach (var comboCell in ComboHighlights)
+                comboBounds.Encapsulate(gridPoints[comboCell]);
+            
+            pointsPopuper.transform.position = comboBounds.center;
+            pointsPopuper.PlayPopup(earnedPoints.ToString());
+        }
+        else
+        {
+            pointsPopuper.transform.position = gridBounds.center;
+            pointsPopuper.PlayComboPopup(earnedPoints.ToString());
+        }
     }
 }

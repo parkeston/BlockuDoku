@@ -77,16 +77,8 @@ public class Figure : MonoBehaviour
         }
     }
 
-    public void MoveToGridClosestPoints(Vector3[] points, Action onComplete)
-    {
-        Bounds gridSlotBounds = new Bounds(points[0],Vector3.one);
-        foreach (var point in points)
-        {
-            gridSlotBounds.Encapsulate(point);
-        }
-
-        StartCoroutine(TranslateToPoint(gridSlotBounds.center, 0.1f,onComplete));
-    }
+    public void MoveToGridClosestPoints(Vector3 point, Action onComplete) =>
+        StartCoroutine(TranslateToPoint(point, 0.1f,onComplete));
 
     private IEnumerator TranslateToPoint(Vector3 point, float duration,Action onComplete)
     {
