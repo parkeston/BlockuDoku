@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
 
 public class Grid : MonoBehaviour
 {
     //todo: refactor
-    [SerializeField] private PointsPopuper pointsPopuper;
-    [SerializeField] private PointsTimer scorePointsCounter;
-    private int scorePoints;
+    [SerializeField] private GameScore gameScore;
     [SerializeField] private LoseScreen loseScreen;
     [SerializeField] private FiguresPool figuresPool;
     
@@ -156,13 +153,13 @@ public class Grid : MonoBehaviour
         foreach (var currentFigure in figuresPool.CurrentFigures)
             anyInteractable|= CheckFigurePlacementAbility(currentFigure);
         if(!anyInteractable)
-            loseScreen.Show(scorePoints.ToString());
+            loseScreen.Show(gameScore.CurrentScore.ToString(),gameScore.TrySaveNewHighScore());
     }
 
     private bool CheckFigurePlacementAbility(Figure figure)
     {
-        //if less than half of grid set, skip actual check
-        if (SetPoints.Count < gridSize.x * gridSize.y / 2)
+        //if less than third part of grid set, skip actual check
+        if (SetPoints.Count < gridSize.x * gridSize.y / 3)
         {
             figure.Interactable = true;
             return true;
@@ -272,31 +269,20 @@ public class Grid : MonoBehaviour
 
     private void ConsumeComboSet()
     {
-        if (ComboHighlights.Count == 0)
-        {
-            scorePoints += ClosestPoints.Count;
-            scorePointsCounter.SetValue(scorePoints);
-            return;
-        }
+        Vector3 comboPopupPosition;
+        var scoreCellsCount = ComboHighlights.Count > 0 ? ComboHighlights.Count : ClosestPoints.Count;
         
-        SetPoints.ExceptWith(ComboHighlights);
-        var earnedPoints = ComboHighlights.Count * 2;
-        scorePoints += earnedPoints;
-        scorePointsCounter.SetValue(scorePoints);
-
-        if (ComboHighlights.Count <= 9) //not a combo
+        if (ComboHighlights.Count == 9) //default combo
         {
             var comboBounds = new Bounds(gridPoints[ComboHighlights.First()], Vector3.one);
             foreach (var comboCell in ComboHighlights)
                 comboBounds.Encapsulate(gridPoints[comboCell]);
-            
-            pointsPopuper.transform.position = comboBounds.center;
-            pointsPopuper.PlayPopup(earnedPoints.ToString());
+            comboPopupPosition = comboBounds.center;
         }
         else
-        {
-            pointsPopuper.transform.position = gridBounds.center;
-            pointsPopuper.PlayComboPopup(earnedPoints.ToString());
-        }
+            comboPopupPosition = gridBounds.center;
+        
+        SetPoints.ExceptWith(ComboHighlights);
+        gameScore.AddScore(scoreCellsCount,comboPopupPosition);
     }
 }

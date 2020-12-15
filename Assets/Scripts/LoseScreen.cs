@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class LoseScreen : MonoBehaviour
 {
-    [SerializeField] private TMP_Text pointsCount;
+    [SerializeField] private TMP_Text scoreTitle;
+    [SerializeField] private ScoreGroup scorePoints;
     [SerializeField] private Button newGameButton;
     [SerializeField] private CanvasGroup canvasGroup;
 
@@ -16,9 +17,12 @@ public class LoseScreen : MonoBehaviour
         newGameButton.onClick.AddListener(()=>SceneManager.LoadScene(0));
     }
 
-    public void Show(string points, float delay = 0.5f, float duration = 2)
-    { 
-        pointsCount.text = points;
+    public void Show(string points, bool newHighScore, float delay = 0.5f, float duration = 2)
+    {
+        scoreTitle.text = newHighScore ? "New record" : "Score";
+        scorePoints.ScoreIcon.SetActive(newHighScore);
+        scorePoints.ScoreText.text = points;
+        
         gameObject.SetActive(true);
         canvasGroup.alpha = 0;
         

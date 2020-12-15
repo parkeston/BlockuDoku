@@ -2,7 +2,7 @@
 using TMPro;
 using UnityEngine;
 
-public class PointsTimer : MonoBehaviour
+public class AnimatedCounter : MonoBehaviour
 {
     [SerializeField] private float timeToUpdate;
     [SerializeField] private TMP_Text valueText;
