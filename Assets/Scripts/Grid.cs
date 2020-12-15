@@ -2,14 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Grid : MonoBehaviour
 {
     //todo: refactor
+    [SerializeField] private GridText gridText;
+    [SerializeField] private int multiLifeCellsCount;
+    [Range(2,5)][SerializeField] private int maxCellLife;
+    
+    [Space]
     [SerializeField] private GameScore gameScore;
     [SerializeField] private LoseScreen loseScreen;
     [SerializeField] private FiguresPool figuresPool;
     
+    [Space]
     [SerializeField] private RectTransform rectTransform;
     [SerializeField] private GridRenderer gridRenderer;
     
@@ -25,6 +32,7 @@ public class Grid : MonoBehaviour
     public HashSet<(int x, int y)> ComboHighlights { get; private set; }
     
     private Dictionary<(int x,int y),Vector2> gridPoints;
+    private Dictionary<(int x, int y), int> multiLifePoints;
     private Bounds gridBounds;
 
     private  void OnValidate()
@@ -42,6 +50,7 @@ public class Grid : MonoBehaviour
         SetPoints = new HashSet<(int, int)>();
         ComboHighlights = new HashSet<(int x, int y)>();
         gridPoints = new Dictionary<(int, int), Vector2>();
+        multiLifePoints = new Dictionary<(int x, int y), int>();
     }
 
     private void Start()
@@ -58,6 +67,8 @@ public class Grid : MonoBehaviour
 
         gridBounds = new Bounds();
         rectTransform.GetBounds(ref gridBounds);
+
+        GenerateLifeCells();
     }
 
     private void OnEnable()
@@ -267,6 +278,7 @@ public class Grid : MonoBehaviour
         }
     }
 
+    
     private void ConsumeComboSet()
     {
         Vector3 comboPopupPosition;
@@ -282,7 +294,59 @@ public class Grid : MonoBehaviour
         else
             comboPopupPosition = gridBounds.center;
         
+        UpdateMultiLifeMode();
         SetPoints.ExceptWith(ComboHighlights);
         gameScore.AddScore(scoreCellsCount,comboPopupPosition);
+    }
+
+    private void UpdateMultiLifeMode()
+    {
+        if (multiLifePoints.Count > 0 && ComboHighlights.Overlaps(multiLifePoints.Keys))
+        {
+            HashSet<(int x, int y)> tmpCombo = new HashSet<(int x, int y)>(ComboHighlights);
+            ComboHighlights.ExceptWith(multiLifePoints.Keys);
+            
+            foreach (var comboCell in tmpCombo)
+            {
+                if (multiLifePoints.ContainsKey(comboCell))
+                {
+                    var cellLife = --multiLifePoints[comboCell];
+                    if (cellLife == 1)
+                        multiLifePoints.Remove(comboCell);
+                }
+            }
+            UpdateMultiLifeCellsText();
+        }
+    }
+
+    private void GenerateLifeCells()
+    {
+        if(multiLifeCellsCount<=0)
+            return;
+        
+        List<(int x,int y)> possibleCells = new List<(int x, int y)>(gridPoints.Keys);
+        
+        for (int i = 0; i<multiLifeCellsCount; i++)
+        {
+            int index = Random.Range(0, possibleCells.Count);
+            (int x, int y) cell = possibleCells[index];
+            possibleCells.RemoveAt(index);
+            
+            SetPoints.Add(cell);
+            multiLifePoints.Add(cell,Random.Range(2,maxCellLife+1));
+        }
+        UpdateMultiLifeCellsText();
+    }
+
+    private void UpdateMultiLifeCellsText()
+    {
+        Vector2[] lifePointsTextPositions = new Vector2[multiLifePoints.Count];
+        int k = 0;
+        foreach (var cell in multiLifePoints.Keys)
+        {
+            lifePointsTextPositions[k] = gridPoints[cell];
+            k++;
+        }
+        gridText.UpdateText(multiLifePoints.Values.ToArray(),lifePointsTextPositions);
     }
 }
