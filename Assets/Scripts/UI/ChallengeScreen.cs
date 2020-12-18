@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class ChallengeScreen : MonoBehaviour
+public class ChallengeScreen : UIPanel
 {
     [SerializeField] private Vector2Int maxMonthOffsetFromCurrent;
 
@@ -10,29 +11,25 @@ public class ChallengeScreen : MonoBehaviour
     [SerializeField] private SnapScrollRect snapScrollRect;
     [SerializeField] private GameObject monthCupPrefab;
     [SerializeField] private ChallengeCalendar challengeCalendar;
+    [SerializeField] private Button playButton;
 
     private int totalMonthOffsetFromCurrent;
-    private void Awake()
+
+    public override void Init()
     {
         var cupsCount = maxMonthOffsetFromCurrent.y - maxMonthOffsetFromCurrent.x+1;
         for (int i = 0; i < cupsCount; i++)
             Instantiate(monthCupPrefab, snapScrollRect.content, false);
-    }
-
-    private void OnEnable()
-    {
+        
         snapScrollRect.OnSnapping += ChangeChallengeMonth;
-    }
-    
-    private void OnDisable()
-    {
-        snapScrollRect.OnSnapping -= ChangeChallengeMonth;
+        playButton.onClick.AddListener(PlayChallenge);
     }
 
-    private void Start()
+    protected override void OnShown()
     {
         totalMonthOffsetFromCurrent = maxMonthOffsetFromCurrent.x;
-        snapScrollRect.InvokeSnap(-maxMonthOffsetFromCurrent.x);
+        snapScrollRect.horizontalNormalizedPosition = 0;
+        snapScrollRect.InvokeSnap(-maxMonthOffsetFromCurrent.x,true);
     }
 
     private void ChangeChallengeMonth(int monthDelta)
@@ -48,4 +45,6 @@ public class ChallengeScreen : MonoBehaviour
         
         challengeCalendar.ChangeMonth(totalMonthOffsetFromCurrent);
     }
+
+    private void PlayChallenge() => GameManager.Instance.Play(true);
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class FiguresPool : MonoBehaviour
 {
@@ -27,10 +28,29 @@ public class FiguresPool : MonoBehaviour
 
             k += 2;
         }
-        
-        GetFigureSet(3);
     }
 
+    private void OnEnable()
+    {
+        GameManager.Instance.OnGameStarted += GenerateFigures;
+    }
+    
+    private void OnDisable()
+    {
+        GameManager.Instance.OnGameStarted += GenerateFigures;
+    }
+
+    private void GenerateFigures(GameMode gameMode)
+    {
+        foreach (var currentFigure in CurrentFigures)
+        {
+            currentFigure.gameObject.SetActive(false);
+            figuresPool.Add(currentFigure);
+        }
+        CurrentFigures.Clear();
+        GetFigureSet(3);
+    }
+    
     private void GetFigureSet(int figuresInSet)
     {
         layoutGroup.enabled = true;

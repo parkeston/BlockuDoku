@@ -22,7 +22,7 @@ public class FigureMover : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     private void Awake()
     {
-        pointerOffset = new Vector2(Screen.width * pointerOffsetFactor.x, Screen.height * pointerOffsetFactor.y);
+        pointerOffset = new Vector2(UnityEngine.Screen.width * pointerOffsetFactor.x, UnityEngine.Screen.height * pointerOffsetFactor.y);
     }
 
     //no need for screen space to world space conversion with screen space overlay canvas mode

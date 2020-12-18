@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -9,7 +10,12 @@ public class AnimatedCounter : MonoBehaviour
 
     private float value;
     private Coroutine valueUpdatingRoutine;
-    
+
+    public void ResetCounterTo(float value)
+    {
+        this.value = value;
+    }
+
     public void SetValue(int targetValue)
     {
         if(valueUpdatingRoutine !=null)

@@ -44,7 +44,7 @@ public class SnapScrollRect : ScrollRect
         OnSnapping?.Invoke(direction);
     }
 
-    public void InvokeSnap(int direction)
+    public void InvokeSnap(int direction, bool immediately = false)
     {
         if(snappingRoutine!=null)
             return;
@@ -52,8 +52,11 @@ public class SnapScrollRect : ScrollRect
         var scrollElements = content.childCount;
         targetPosition = horizontalNormalizedPosition + direction * 1f / (scrollElements - 1f);
         targetPosition = Mathf.Clamp01(targetPosition);
-        
-        snappingRoutine = StartCoroutine(SnapToScrollPosition(horizontalNormalizedPosition, targetPosition));
+
+        if (immediately)
+            horizontalNormalizedPosition = targetPosition;
+        else
+            snappingRoutine = StartCoroutine(SnapToScrollPosition(horizontalNormalizedPosition, targetPosition));
         OnSnapping?.Invoke(direction);
     }
 

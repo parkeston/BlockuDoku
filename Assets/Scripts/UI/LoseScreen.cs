@@ -1,32 +1,30 @@
 ﻿using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class LoseScreen : MonoBehaviour
+public class LoseScreen : UIPanel
 {
     [SerializeField] private TMP_Text scoreTitle;
     [SerializeField] private ScoreGroup scorePoints;
     [SerializeField] private Button newGameButton;
+    [SerializeField] private Button homeButton;
     [SerializeField] private CanvasGroup canvasGroup;
 
-    private void Awake()
+    public override void Init()
     {
-        gameObject.SetActive(false);
-        newGameButton.onClick.AddListener(()=>SceneManager.LoadScene(0));
+        newGameButton.onClick.AddListener( GameManager.Instance.Retry);
+        homeButton.onClick.AddListener(GameManager.Instance.ToMainMenu); //todo: return to specific tab of main menu!
     }
 
-    public void Show(string points, bool newHighScore, float delay = 0.5f, float duration = 2)
+    protected override void OnShown()
     {
-        scoreTitle.text = newHighScore ? "New record" : "Score";
-        scorePoints.ScoreIcon.SetActive(newHighScore);
-        scorePoints.ScoreText.text = points;
+        scoreTitle.text = GameManager.Instance.GameScore.IsNewHighScore ? "New record" : "Score";
+        scorePoints.ScoreIcon.SetActive(GameManager.Instance.GameScore.IsNewHighScore);
+        scorePoints.ScoreText.text = GameManager.Instance.GameScore.CurrentScore.ToString();
         
-        gameObject.SetActive(true);
         canvasGroup.alpha = 0;
-        
-        StartCoroutine(ShowWithDelay(delay,duration));
+        StartCoroutine(ShowWithDelay(1,1));
     }
 
     private IEnumerator ShowWithDelay(float delay, float duration)

@@ -8,12 +8,8 @@ public class Grid : MonoBehaviour
 {
     //todo: refactor
     [SerializeField] private GridText gridText;
-    [SerializeField] private int multiLifeCellsCount;
-    [Range(2,5)][SerializeField] private int maxCellLife;
-    
+
     [Space]
-    [SerializeField] private GameScore gameScore;
-    [SerializeField] private LoseScreen loseScreen;
     [SerializeField] private FiguresPool figuresPool;
     
     [Space]
@@ -67,20 +63,20 @@ public class Grid : MonoBehaviour
 
         gridBounds = new Bounds();
         rectTransform.GetBounds(ref gridBounds);
-
-        GenerateLifeCells();
     }
 
     private void OnEnable()
     {
         FigureMover.OnFigureDrag += UpdateGridDetectionOnDrag;
         FigureMover.OnFigureDragEnded += UpdateGridDetectionOnDragEnd;
+        GameManager.Instance.OnGameStarted += GenerateGrid;
     }
     
     private void OnDisable()
     {
         FigureMover.OnFigureDrag -= UpdateGridDetectionOnDrag;
         FigureMover.OnFigureDragEnded -= UpdateGridDetectionOnDragEnd;
+        GameManager.Instance.OnGameStarted -= GenerateGrid;
     }
 
     private void UpdateGridDetectionOnDrag(Figure figure)
@@ -164,7 +160,7 @@ public class Grid : MonoBehaviour
         foreach (var currentFigure in figuresPool.CurrentFigures)
             anyInteractable|= CheckFigurePlacementAbility(currentFigure);
         if(!anyInteractable)
-            loseScreen.Show(gameScore.CurrentScore.ToString(),gameScore.TrySaveNewHighScore());
+            GameManager.Instance.Lose();
     }
 
     private bool CheckFigurePlacementAbility(Figure figure)
@@ -296,7 +292,7 @@ public class Grid : MonoBehaviour
         
         UpdateMultiLifeMode();
         SetPoints.ExceptWith(ComboHighlights);
-        gameScore.AddScore(scoreCellsCount,comboPopupPosition);
+        GameManager.Instance.GameScore.AddScore(scoreCellsCount,comboPopupPosition);
     }
 
     private void UpdateMultiLifeMode()
@@ -319,21 +315,27 @@ public class Grid : MonoBehaviour
         }
     }
 
-    private void GenerateLifeCells()
+    private void GenerateGrid(GameMode gameMode)
     {
-        if(multiLifeCellsCount<=0)
+        ClosestPoints.Clear();
+        SetPoints.Clear();
+        ComboHighlights.Clear();
+        multiLifePoints.Clear();
+        gridRenderer.SetVerticesDirty();
+        
+        if(gameMode.MultiLifeCellsCount<=0)
             return;
         
         List<(int x,int y)> possibleCells = new List<(int x, int y)>(gridPoints.Keys);
         
-        for (int i = 0; i<multiLifeCellsCount; i++)
+        for (int i = 0; i<gameMode.MultiLifeCellsCount; i++)
         {
             int index = Random.Range(0, possibleCells.Count);
             (int x, int y) cell = possibleCells[index];
             possibleCells.RemoveAt(index);
             
             SetPoints.Add(cell);
-            multiLifePoints.Add(cell,Random.Range(2,maxCellLife+1));
+            multiLifePoints.Add(cell,Random.Range(2,gameMode.MaXCellLife+1));
         }
         UpdateMultiLifeCellsText();
     }

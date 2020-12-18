@@ -61,11 +61,11 @@ public class Figure : MonoBehaviour
     private void Awake()
     {
         LocalFigurePoints = new List<Vector2>();
-        Interactable = true;
     }
 
     private void OnEnable()
     {
+        Interactable = true;
         figureRenderer.PlayRevealAnimation();
         Shrink(0.5f);
     }
