@@ -47,6 +47,8 @@ public class Grid : MonoBehaviour
         ComboHighlights = new HashSet<(int x, int y)>();
         gridPoints = new Dictionary<(int, int), Vector2>();
         multiLifePoints = new Dictionary<(int x, int y), int>();
+        
+        GameManager.Instance.OnGameStarted += GenerateGrid;
     }
 
     private void Start()
@@ -69,14 +71,12 @@ public class Grid : MonoBehaviour
     {
         FigureMover.OnFigureDrag += UpdateGridDetectionOnDrag;
         FigureMover.OnFigureDragEnded += UpdateGridDetectionOnDragEnd;
-        GameManager.Instance.OnGameStarted += GenerateGrid;
     }
     
     private void OnDisable()
     {
         FigureMover.OnFigureDrag -= UpdateGridDetectionOnDrag;
         FigureMover.OnFigureDragEnded -= UpdateGridDetectionOnDragEnd;
-        GameManager.Instance.OnGameStarted -= GenerateGrid;
     }
 
     private void UpdateGridDetectionOnDrag(Figure figure)
@@ -160,7 +160,8 @@ public class Grid : MonoBehaviour
         foreach (var currentFigure in figuresPool.CurrentFigures)
             anyInteractable|= CheckFigurePlacementAbility(currentFigure);
         if(!anyInteractable)
-            GameManager.Instance.Lose();
+            CoroutineSheduler.Instance.InvokeWithDelay(()=>
+                GameManager.Instance.Lose(new Rect(gridBounds.min,gridBounds.size)),0.5f);
     }
 
     private bool CheckFigurePlacementAbility(Figure figure)

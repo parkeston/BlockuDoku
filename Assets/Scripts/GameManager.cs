@@ -1,8 +1,10 @@
-﻿
-using System;
+﻿using System;
+using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
+   [SerializeField] private UIManager UIManager;
+   
    private GameMode gameMode;
    public GameScore GameScore { get; private set; }
    public event Action<GameMode> OnGameStarted;
@@ -15,7 +17,7 @@ public class GameManager : Singleton<GameManager>
 
    private void Start()
    {
-      UIManager.Instance.Show(UIPanel.Type.MainMenu);
+      UIManager.Show(UIPanel.Type.MainMenu);
    }
 
    public void Play(bool challengeMode)
@@ -27,37 +29,32 @@ public class GameManager : Singleton<GameManager>
       
       GameScore.ResetScore();
 
-      UIManager.Instance.HideAll();
-      UIManager.Instance.Show(UIPanel.Type.GameScore);
+      UIManager.Show(UIPanel.Type.GameScore,true);
       OnGameStarted?.Invoke(gameMode);
    }
 
-   public void Retry()
-   {
-      GameScore.ResetScore();
-      
-      //do not change game mode, start the same as last
-      UIManager.Instance.HideAll();
-      UIManager.Instance.Show(UIPanel.Type.GameScore);
-      OnGameStarted?.Invoke(gameMode);
-   }
+   public void Retry() => Play(gameMode.IsChallengeMode);
 
    public void Win()
    {
       GameScore.TrySaveNewHighScore();
    }
 
-   public void Lose()
+   public void Lose(Rect gridRect)
    {
-      GameScore.TrySaveNewHighScore();
-      
-      UIManager.Instance.HideAll();
-      UIManager.Instance.Show(UIPanel.Type.LoseScreen);
+      if (!gameMode.IsChallengeMode)
+      {
+         GameScore.TrySaveNewHighScore();
+         UIManager.Show(UIPanel.Type.LoseScreen, out UIPanel losePanel);
+         (losePanel as LoseScreen)?.TakeScreenshot(gridRect);
+      }
+      else
+         UIManager.Show(UIPanel.Type.LoseScreenChallenge);
    }
 
    public void ToMainMenu()
    {
-      UIManager.Instance.HideAll();
-      UIManager.Instance.Show(UIPanel.Type.MainMenu);
+      UIManager.Show(UIPanel.Type.MainMenu,out UIPanel mainMenu,true);
+      (mainMenu as TabSystem)?.SelectTab(gameMode.IsChallengeMode?1:0);
    }
 }

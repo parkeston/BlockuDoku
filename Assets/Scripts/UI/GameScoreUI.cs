@@ -25,7 +25,7 @@ public class GameScoreUI : UIPanel
         pointsAnimatedCounter.ResetCounterTo(GameManager.Instance.GameScore.CurrentScore);
     }
 
-    public void ShowScoreAdditionPopup(int earnedPoints,Vector3 comboPopupPosition)
+    private void ShowScoreAdditionPopup(int earnedPoints,Vector3 comboPopupPosition)
     {
         pointsAnimatedCounter.SetValue(GameManager.Instance.GameScore.CurrentScore);
         CheckForNewHighScore();

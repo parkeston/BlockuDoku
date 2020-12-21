@@ -28,15 +28,7 @@ public class FiguresPool : MonoBehaviour
 
             k += 2;
         }
-    }
-
-    private void OnEnable()
-    {
-        GameManager.Instance.OnGameStarted += GenerateFigures;
-    }
-    
-    private void OnDisable()
-    {
+        
         GameManager.Instance.OnGameStarted += GenerateFigures;
     }
 

@@ -10,7 +10,8 @@ public abstract class UIPanel : MonoBehaviour
         Undefined,
         LoseScreen,
         MainMenu,
-        GameScore
+        GameScore,
+        LoseScreenChallenge
     }
 
     [SerializeField] private Type type;

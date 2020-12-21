@@ -10,6 +10,7 @@ public class GameMode
 
     public int MultiLifeCellsCount => multiLifeCellsCount;
     public int MaXCellLife => maxCellLife;
+    public bool IsChallengeMode => multiLifeCellsCount > 0;
     
     public void SetDefaultMode()
     {

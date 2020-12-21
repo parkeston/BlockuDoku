@@ -7,11 +7,12 @@ public class TabSystem : UIPanel
     [Serializable]
     private struct TabScreenPair
     {
-        [SerializeField] private Toggle tab;
+        [SerializeField] private TabToggle tab;
         [SerializeField] private UIPanel uiPanel;
 
-        public void Init()
+        public void Init(Action<Toggle,bool> tabClicked)
         {
+            tab.OnToggleClicked += tabClicked;
             tab.onValueChanged.AddListener(TabScreenResponse);
             uiPanel.Init();
         }
@@ -44,9 +45,11 @@ public class TabSystem : UIPanel
     
     [Space]
     [SerializeField] private TabScreenPair[] tabScreenPairs;
-
+    [SerializeField] private UITransition tabTransition;
+    
     [HideInInspector][SerializeField] private ToggleGroup toggleGroup;
 
+    #if UNITY_EDITOR
     private void OnValidate()
     {
         if (useToggleGroup)
@@ -58,12 +61,13 @@ public class TabSystem : UIPanel
         else if (!useToggleGroup && toggleGroup!=null)
             UnityEditor.EditorApplication.delayCall+=()=>DestroyImmediate(toggleGroup);
     }
+    #endif
     
     public override void Init()
     {
         foreach (var tabScreenPair in tabScreenPairs)
         {
-            tabScreenPair.Init();
+            tabScreenPair.Init(TryInvokeTabTransition);
             if(useToggleGroup)
                 tabScreenPair.SetToggleGroup(toggleGroup);
         }
@@ -74,6 +78,18 @@ public class TabSystem : UIPanel
         DisableAllTabs();
         tabScreenPairs[defaultPair].IsOn = true;
     }
+    
+    private void TryInvokeTabTransition(Toggle toggle, bool value)
+    {
+        if(!value && (useToggleGroup && !allowSwitchOff))
+            return;
+        if(tabTransition!=null)
+            tabTransition.Play(()=>toggle.isOn=value);
+        else
+            toggle.isOn = value;
+    }
+
+    public void SelectTab(int index) => tabScreenPairs[index].IsOn = true;
 
     private void DisableAllTabs()
     {
