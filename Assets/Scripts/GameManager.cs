@@ -29,8 +29,7 @@ public class GameManager : Singleton<GameManager>
       
       GameScore.ResetScore();
 
-      UIManager.Show(UIPanel.Type.GameScore,true);
-      OnGameStarted?.Invoke(gameMode);
+      UIManager.Show(UIPanel.Type.GameScore,true,panel => OnGameStarted?.Invoke(gameMode));
    }
 
    public void Retry() => Play(gameMode.IsChallengeMode);
@@ -45,8 +44,9 @@ public class GameManager : Singleton<GameManager>
       if (!gameMode.IsChallengeMode)
       {
          GameScore.TrySaveNewHighScore();
-         UIManager.Show(UIPanel.Type.LoseScreen, out UIPanel losePanel);
-         (losePanel as LoseScreen)?.TakeScreenshot(gridRect);
+         UIManager.InvokePanelAction(UIPanel.Type.LoseScreen,
+            losePanel =>  (losePanel as LoseScreen)?.TakeScreenshot(gridRect));
+         UIManager.Show(UIPanel.Type.LoseScreen);
       }
       else
          UIManager.Show(UIPanel.Type.LoseScreenChallenge);
@@ -54,7 +54,7 @@ public class GameManager : Singleton<GameManager>
 
    public void ToMainMenu()
    {
-      UIManager.Show(UIPanel.Type.MainMenu,out UIPanel mainMenu,true);
-      (mainMenu as TabSystem)?.SelectTab(gameMode.IsChallengeMode?1:0);
+      UIManager.Show(UIPanel.Type.MainMenu,true,
+         mainMenu=>  (mainMenu as TabSystem)?.SelectTab(gameMode.IsChallengeMode?1:0));
    }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -27,14 +28,18 @@ public class UIManager : MonoBehaviour
             }
         }
     }
-    
-    public void Show(UIPanel.Type type, bool hidePreviousPanels = false) => Show(type, out _,hidePreviousPanels);
 
-    public void Show(UIPanel.Type type, out UIPanel outPanel, bool hidePreviousPanels=false)
+    public void InvokePanelAction(UIPanel.Type type, Action<UIPanel> action)
     {
-        var panel = outPanel = null;
         if (panels.ContainsKey(type))
-            panel = outPanel = panels[type];
+            action?.Invoke(panels[type]);
+    }
+    
+    public void Show(UIPanel.Type type, bool hidePreviousPanels=false, Action<UIPanel> onPanelShown = null)
+    {
+        UIPanel panel = null;
+        if (panels.ContainsKey(type))
+            panel = panels[type];
         else
             return;
 
@@ -47,6 +52,7 @@ public class UIManager : MonoBehaviour
         {
             if(hidePreviousPanels) HideAll();
             panel.Show();
+            onPanelShown?.Invoke(panel);
         }
     }
 
