@@ -10,6 +10,8 @@ public class GameScore
 
     public event Action<int, Vector3> OnScoreAdded;
 
+    public GameScore() => ResetScore();
+
     public void ResetScore()
     {
         CurrentHighScore = PlayerPrefs.GetInt("HighScore",0);
