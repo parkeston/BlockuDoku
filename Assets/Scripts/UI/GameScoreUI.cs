@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class GameScoreUI : UIPanel
 {
@@ -9,9 +10,13 @@ public class GameScoreUI : UIPanel
     [SerializeField] private ScoreGroup highScoreGroup;
     [SerializeField] private ScoreGroup currentPointsGroup;
 
+    [Space]
+    [SerializeField] private Button backButton;
+
     public override void Init()
     {
         GameManager.Instance.GameScore.OnScoreAdded += ShowScoreAdditionPopup;
+        backButton.onClick.AddListener(GameManager.Instance.ToMainMenu);
     }
 
     protected override void OnShown()
