@@ -325,20 +325,16 @@ public class Grid : MonoBehaviour
         gridRenderer.SetVerticesDirty();
         gridText.Clear();
         
-        if(gameMode.MultiLifeCellsCount<=0)
+        if(!gameMode.IsChallengeMode)
             return;
         
-        List<(int x,int y)> possibleCells = new List<(int x, int y)>(gridPoints.Keys);
-        
-        for (int i = 0; i<gameMode.MultiLifeCellsCount; i++)
+        //todo:set point to win!
+        foreach (var gridCell in gameMode.CurrentChallenge.GridSet)
         {
-            int index = Random.Range(0, possibleCells.Count);
-            (int x, int y) cell = possibleCells[index];
-            possibleCells.RemoveAt(index);
-            
-            SetPoints.Add(cell);
-            multiLifePoints.Add(cell,Random.Range(2,gameMode.MaXCellLife+1));
+            SetPoints.Add(gridCell.CellIndex);
+            multiLifePoints.Add(gridCell.CellIndex,gridCell.LifePoints);
         }
+        
         UpdateMultiLifeCellsText();
     }
 

@@ -31,6 +31,8 @@ public class CalendarDrawer : MonoBehaviour, IPointerClickHandler
     private int selectedDayCellIndex=-1;
     private int currentDayCellIndex;
 
+    public int SelectedDay => selectedDayCellIndex - firstDayIndexOffset - 7+1;
+
     private void Awake()
     {
        var rect = textComponent.rectTransform.rect;

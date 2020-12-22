@@ -46,5 +46,5 @@ public class ChallengeScreen : UIPanel
         challengeCalendar.ChangeMonth(totalMonthOffsetFromCurrent);
     }
 
-    private void PlayChallenge() => GameManager.Instance.Play(true);
+    private void PlayChallenge() => GameManager.Instance.Play(challengeCalendar.GetSelectedDate());
 }

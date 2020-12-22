@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,5 +13,14 @@ public class LoseScreenChallenge : UIPanel
     {
         retryButton.onClick.AddListener( GameManager.Instance.Retry);
         challengesButton.onClick.AddListener(GameManager.Instance.ToMainMenu); //todo: return to specific tab of main menu!
+    }
+
+    protected override void OnShown()
+    {
+        //todo: animate
+        float progress = (float)GameManager.Instance.GameScore.CurrentScore /
+                         GameManager.Instance.GameMode.CurrentChallenge.PointsToPass;
+        challengeProgressBar.fillAmount = progress;
+        challengeProgressTitle.text = $"{(int)(progress*100)}% Done";
     }
 }

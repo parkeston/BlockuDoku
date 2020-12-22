@@ -5,13 +5,13 @@ public class GameManager : Singleton<GameManager>
 {
    [SerializeField] private UIManager UIManager;
    
-   private GameMode gameMode;
+   public GameMode GameMode { get; private set; }
    public GameScore GameScore { get; private set; }
    public event Action<GameMode> OnGameStarted;
 
    private void Awake()
    {
-      gameMode = new GameMode();
+      GameMode = new GameMode();
       GameScore = new GameScore();
    }
 
@@ -20,19 +20,23 @@ public class GameManager : Singleton<GameManager>
       UIManager.Show(UIPanel.Type.MainMenu);
    }
 
-   public void Play(bool challengeMode)
+   public void Play()
    {
-      if (challengeMode)
-         gameMode.SetChallengeMode();
-      else
-         gameMode.SetDefaultMode();
-      
-      GameScore.ResetScore();
-
-      UIManager.Show(UIPanel.Type.GameScore,true,panel => OnGameStarted?.Invoke(gameMode));
+      GameMode.SetDefaultMode();
+      Retry();
    }
 
-   public void Retry() => Play(gameMode.IsChallengeMode);
+   public void Play(DateTime dateTime)
+   {
+      GameMode.SetChallengeMode(dateTime);
+      Retry();
+   }
+
+   public void Retry()
+   {
+      GameScore.ResetScore();
+      UIManager.Show(UIPanel.Type.GameScore,true,panel => OnGameStarted?.Invoke(GameMode));
+   }
 
    public void Win()
    {
@@ -41,7 +45,7 @@ public class GameManager : Singleton<GameManager>
 
    public void Lose(Rect gridRect)
    {
-      if (!gameMode.IsChallengeMode)
+      if (!GameMode.IsChallengeMode)
       {
          GameScore.TrySaveNewHighScore();
          UIManager.InvokePanelAction(UIPanel.Type.LoseScreen,
@@ -55,6 +59,6 @@ public class GameManager : Singleton<GameManager>
    public void ToMainMenu()
    {
       UIManager.Show(UIPanel.Type.MainMenu,true,
-         mainMenu=>  (mainMenu as TabSystem)?.SelectTab(gameMode.IsChallengeMode?1:0));
+         mainMenu=>  (mainMenu as TabSystem)?.SelectTab(GameMode.IsChallengeMode?1:0));
    }
 }

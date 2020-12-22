@@ -1,4 +1,5 @@
 ﻿
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +20,6 @@ public class HomeScreen : UIPanel
         highScore.ScoreText.text = GameManager.Instance.GameScore.CurrentHighScore.ToString();
     }
 
-    private void PlayDefaultMode() => GameManager.Instance.Play(false);
-    private void PlayChallengeMode() => GameManager.Instance.Play(true);
+    private void PlayDefaultMode() => GameManager.Instance.Play();
+    private void PlayChallengeMode() => GameManager.Instance.Play(DateTime.Today);
 }

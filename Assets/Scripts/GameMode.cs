@@ -1,29 +1,32 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameMode
 {
-    private int multiLifeCellsCount;
-    private int maxCellLife;
-
-    public int MultiLifeCellsCount => multiLifeCellsCount;
-    public int MaXCellLife => maxCellLife;
-    public bool IsChallengeMode => multiLifeCellsCount > 0;
-
-    public GameMode() => SetDefaultMode();
+    private Dictionary<(int month,int year),MonthChallengeSet> monthChallengeSets;
     
-    public void SetDefaultMode()
+    public bool IsChallengeMode => CurrentChallenge!=null;
+    public Challenge CurrentChallenge { get; private set; }
+
+    public GameMode()
     {
-        multiLifeCellsCount = 0;
-        maxCellLife = 1;
+        monthChallengeSets = Resources.LoadAll<MonthChallengeSet>("Challenges/")
+            .ToDictionary(challengeSet => challengeSet.Date,challengeSet => challengeSet);
+        SetDefaultMode();
     }
 
-    //todo: get actual challenge data
-    public void SetChallengeMode()
+    public void SetDefaultMode()
     {
-        multiLifeCellsCount = 10;
-        maxCellLife = 3;
+        CurrentChallenge = null;
+    }
+
+    public void SetChallengeMode(DateTime dateTime)
+    {
+        int month = dateTime.Month;
+        int year = dateTime.Year;
+        int day = dateTime.Day;
+        CurrentChallenge = monthChallengeSets.ContainsKey((month, year)) ? monthChallengeSets[(month, year)].GetChallenge(day) : null;
     }
 }
