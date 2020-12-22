@@ -323,6 +323,7 @@ public class Grid : MonoBehaviour
         ComboHighlights.Clear();
         multiLifePoints.Clear();
         gridRenderer.SetVerticesDirty();
+        gridText.Clear();
         
         if(gameMode.MultiLifeCellsCount<=0)
             return;

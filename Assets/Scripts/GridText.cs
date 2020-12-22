@@ -6,11 +6,17 @@ public class GridText : MonoBehaviour
 {
     [SerializeField] private TMP_Text m_TextComponent;
 
+    public void Clear()
+    {
+        m_TextComponent.text = "";
+        m_TextComponent.ForceMeshUpdate();
+    }
+
     public void UpdateText(int[] lifePoints, Vector2[] positions)
     {
         if (lifePoints.Length == 0)
         {
-            m_TextComponent.text = "";
+            Clear();
             return;
         }
         
