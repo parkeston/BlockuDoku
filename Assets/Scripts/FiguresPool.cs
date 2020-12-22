@@ -67,11 +67,21 @@ public class FiguresPool : MonoBehaviour
     private void SetCurrentFiguresPositions()
     {
         //in case of 3 figures, in other case need layout algorithm like built-in unity component
-        CurrentFigures[0].transform.position = figuresSpawnPoint + Vector3.left * (CurrentFigures[0].GetSize().x / 2 
-            + CurrentFigures[1].GetSize().x / 2+figuresSpawnSpacing);
-        CurrentFigures[2].transform.position = figuresSpawnPoint + Vector3.right * (CurrentFigures[1].GetSize().x / 2
-            + CurrentFigures[2].GetSize().x / 2+figuresSpawnSpacing);
-        CurrentFigures[1].transform.position = figuresSpawnPoint;
+        Vector3[] figurePositions = new Vector3[3];
+        figurePositions[0] = figuresSpawnPoint + Vector3.left * (CurrentFigures[0].GetSize().x / 2 
+                                                                 + CurrentFigures[1].GetSize().x / 2+figuresSpawnSpacing);
+        figurePositions[2] = figuresSpawnPoint + Vector3.right * (CurrentFigures[1].GetSize().x / 2 
+                                                                  + CurrentFigures[2].GetSize().x / 2+figuresSpawnSpacing);
+        figurePositions[1] = figuresSpawnPoint;
+
+        var figuresMiddle = ((figurePositions[0]+ Vector3.left * CurrentFigures[0].GetSize().x / 2) 
+                             + (figurePositions[2] + Vector3.right * CurrentFigures[2].GetSize().x / 2))/2;
+        var offset = figuresSpawnPoint - figuresMiddle;
+        for (int i = 0; i < figurePositions.Length; i++)
+        {
+            figurePositions[i] += offset;
+            CurrentFigures[i].transform.position = figurePositions[i];
+        }
     }
 
     public void DisposeFigure(Figure figure)
