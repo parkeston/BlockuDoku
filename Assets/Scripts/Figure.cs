@@ -6,7 +6,8 @@ using UnityEngine;
 
 public class Figure : MonoBehaviour
 {
-    [SerializeField] private RectTransform rectTransform;
+    [SerializeField] private RectTransform pointerBoundsRect;
+    [SerializeField] private RectTransform rendererRect;
     [SerializeField] private FigureRenderer figureRenderer;
 
     [Space]
@@ -28,7 +29,7 @@ public class Figure : MonoBehaviour
         {
             if (bounds == default)
                 bounds = new Bounds();
-            rectTransform.GetBounds(ref bounds);
+            rendererRect.GetBounds(ref bounds);
 
             return bounds;
         }
@@ -51,11 +52,11 @@ public class Figure : MonoBehaviour
         float desiredWidth = (drawCellsIndices.Max(cell => cell.x) +1)* cellSize;
         float desiredHeight = (drawCellsIndices.Max(cell => cell.y) +1) * cellSize;
         
-        var r = rectTransform.rect;
+        var r = rendererRect.rect;
         if(Math.Abs(r.width - desiredWidth) > Mathf.Epsilon)
-            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,desiredWidth);
+            rendererRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,desiredWidth);
         if(Math.Abs(r.height -desiredHeight) > Mathf.Epsilon)
-            rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,desiredHeight);
+            rendererRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,desiredHeight);
     }
 
     private void Awake()
@@ -72,7 +73,7 @@ public class Figure : MonoBehaviour
 
     private void Start()
     {
-        var r = rectTransform.rect;
+        var r = rendererRect.rect;
 
         foreach (var drawCellsIndex in drawCellsIndices)
         {
@@ -113,6 +114,9 @@ public class Figure : MonoBehaviour
         StartCoroutine(ScaleAnimation(1, 0.6f, 0.7f,
             0.8f, 1f, duration));
     }
+    
+    //gets size of rect pointer bounds scaled at the end of animation placement
+    public Vector3 GetSize() => pointerBoundsRect.rect.size * 0.7f;
 
     private IEnumerator ScaleAnimation(float startingSize, float middleSize, float endingSize, float startingInset,
         float endingInset,float duration)

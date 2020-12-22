@@ -6,11 +6,15 @@ using Random = UnityEngine.Random;
 
 public class FiguresPool : MonoBehaviour
 {
-    [SerializeField] private LayoutGroup layoutGroup;
+    [SerializeField] private RectTransform figuresSpawnRect;
+    [SerializeField] private float figuresSpawnSpacing;
+    
     [SerializeField] private Figure[] figurePrefabs;
     
     private List<Figure> figuresPool;
     public List<Figure> CurrentFigures { get; private set; }
+
+    private Vector3 figuresSpawnPoint;
     
     private void Awake()
     {
@@ -29,6 +33,10 @@ public class FiguresPool : MonoBehaviour
             k += 2;
         }
         
+        Bounds attachPointBounds = new Bounds();
+        figuresSpawnRect.GetBounds(ref attachPointBounds);
+        figuresSpawnPoint = attachPointBounds.center;
+        
         GameManager.Instance.OnGameStarted += GenerateFigures;
     }
 
@@ -45,8 +53,6 @@ public class FiguresPool : MonoBehaviour
     
     private void GetFigureSet(int figuresInSet)
     {
-        layoutGroup.enabled = true;
-        
         for (int i = 0; i < figuresInSet; i++)
         {
             int index = Random.Range(0, figuresPool.Count); //add unique randomizing instead of removing picked for current set?
@@ -55,14 +61,17 @@ public class FiguresPool : MonoBehaviour
             CurrentFigures.Add(figure);
             figuresPool.RemoveAt(index);
         }
-
-        StartCoroutine(DisableLayoutGroupOnLayoutUpdate());
+        SetCurrentFiguresPositions();
     }
 
-    private IEnumerator DisableLayoutGroupOnLayoutUpdate()
+    private void SetCurrentFiguresPositions()
     {
-        yield return new WaitForEndOfFrame();
-        layoutGroup.enabled = false;
+        //in case of 3 figures, in other case need layout algorithm like built-in unity component
+        CurrentFigures[0].transform.position = figuresSpawnPoint + Vector3.left * (CurrentFigures[0].GetSize().x / 2 
+            + CurrentFigures[1].GetSize().x / 2+figuresSpawnSpacing);
+        CurrentFigures[2].transform.position = figuresSpawnPoint + Vector3.right * (CurrentFigures[1].GetSize().x / 2
+            + CurrentFigures[2].GetSize().x / 2+figuresSpawnSpacing);
+        CurrentFigures[1].transform.position = figuresSpawnPoint;
     }
 
     public void DisposeFigure(Figure figure)
