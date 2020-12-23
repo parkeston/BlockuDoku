@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
+[Serializable]
 [CreateAssetMenu]
 public class MonthChallengeSet : ScriptableObject
 {

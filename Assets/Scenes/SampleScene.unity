@@ -11111,6 +11111,7 @@ GameObject:
   - component: {fileID: 1996849629}
   - component: {fileID: 1996849633}
   - component: {fileID: 1996849634}
+  - component: {fileID: 1996849635}
   m_Layer: 5
   m_Name: UICanvas
   m_TagString: Untagged
@@ -11229,6 +11230,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UIManager: {fileID: 1996849633}
+--- !u!114 &1996849635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1996849628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d09d1c76bc72c4368983f46553adb64d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saveDirectoryName: saves
+  saveFileName: monthsChallenges
+  monthChallengeSets:
+  - {fileID: 11400000, guid: c14189e97e3b24af1b5e6aff174883d0, type: 2}
+  - {fileID: 11400000, guid: f7f0b1fcacaca4291b1e4f5659ce5749, type: 2}
+  - {fileID: 11400000, guid: e9016fb4c42d64ff58d3296c05272a79, type: 2}
 --- !u!1 &2008519028
 GameObject:
   m_ObjectHideFlags: 0

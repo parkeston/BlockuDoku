@@ -6,8 +6,8 @@ public class Challenge
 {
     [SerializeField] private int pointsToPass;
     [SerializeField] private GridCell[] gridSet;
-    
-    public bool IsCompleted { get; set; }
+
+    [SerializeField] public bool IsCompleted;
     
     [Serializable]
     public struct GridCell
