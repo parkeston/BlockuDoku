@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
-using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class CalendarDrawer : MonoBehaviour, IPointerClickHandler
 {
@@ -26,6 +24,7 @@ public class CalendarDrawer : MonoBehaviour, IPointerClickHandler
     
     private TMP_TextInfo textInfo;
     private TMP_MeshInfo[] cachedMeshInfo;
+    private (int firstCharacterIndex, int lastCharacterIndex)[] wordInfos;
 
     private int firstDayIndexOffset;
     private int selectedDayCellIndex=-1;
@@ -52,23 +51,37 @@ public class CalendarDrawer : MonoBehaviour, IPointerClickHandler
        }
     }
 
-    public void DrawMonth(DateTime firstMonthDate, int currentDayInMonth)
+    public void DrawMonth(DateTime firstMonthDate, int currentDayInMonth,bool[] challengesCompletionState)
     {
         int days = DateTime.DaysInMonth(firstMonthDate.Year, firstMonthDate.Month);
         firstDayIndexOffset = (int) firstMonthDate.DayOfWeek; //index offset in grid for first day in month
+        selectedDayCellIndex = -1;
 
+        wordInfos = new (int firstCharacterInex, int lastCharacterIndex)[7 + days];
+        int wordIndex = 0;
         StringBuilder stringBuilder = new StringBuilder();
-
+        
         var dtFormat = CultureInfo.CurrentCulture.DateTimeFormat; //add header day names
         for (int i = 0; i < 7; i++)
         {
+            int firstIndex = stringBuilder.Length;
             stringBuilder.Append(dtFormat.AbbreviatedDayNames[i]);
+            wordInfos[wordIndex] = (firstIndex, stringBuilder.Length-1);
+            wordIndex++;
+            
             stringBuilder.Append(' ');
         }
 
+        //sprites calculated as one character, need offset for appropriated character indices in word info
+        int spritesOffset = 0; 
         for (int i = 1; i <= days; i++)
         {
-            stringBuilder.Append(i.ToString());
+            int firstIndex = stringBuilder.Length-spritesOffset;
+            stringBuilder.Append(challengesCompletionState[i-1]?"<sprite=0>":i.ToString());
+            wordInfos[wordIndex] = challengesCompletionState[i-1] ? (firstIndex,firstIndex) :(firstIndex, stringBuilder.Length - 1-spritesOffset);
+            if (challengesCompletionState[i - 1]) spritesOffset += 9; //count of characters-1  in  <sprite=0>
+            wordIndex++;
+            
             stringBuilder.Append(' ');
         }
 
@@ -92,7 +105,7 @@ public class CalendarDrawer : MonoBehaviour, IPointerClickHandler
 
         int dayIndex = 0;
         cellIndex += firstDayIndexOffset;
-        for (int i = 7; i < textInfo.wordCount; i++)
+        for (int i = 7; i < wordInfos.Length; i++)
         {
             if (dayIndex + 1 == currentDay)
             {
@@ -127,12 +140,12 @@ public class CalendarDrawer : MonoBehaviour, IPointerClickHandler
     {
         Vector2 charPosition = cellPositions[cellIndex];
 
-        var wordInfo = textInfo.wordInfo[i];
+        var wordInfo = wordInfos[i];
         var xLeft = textInfo.characterInfo[wordInfo.firstCharacterIndex].bottomLeft.x;
         var xRight = textInfo.characterInfo[wordInfo.lastCharacterIndex].bottomRight.x;
         var wordXCenter = (xLeft + xRight) / 2;
 
-        for (int j = 0; j < wordInfo.characterCount; j++)
+        for (int j = 0; j < (wordInfo.lastCharacterIndex-wordInfo.firstCharacterIndex+1); j++)
         {
             UpdateCharacterData(wordInfo.firstCharacterIndex+j,charPosition,wordXCenter,currentColor,currentScale);
         }
@@ -166,12 +179,15 @@ public class CalendarDrawer : MonoBehaviour, IPointerClickHandler
         destinationVertices[vertexIndex + 1] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 1]);
         destinationVertices[vertexIndex + 2] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 2]);
         destinationVertices[vertexIndex + 3] = matrix.MultiplyPoint3x4(destinationVertices[vertexIndex + 3]);
-        
-        var newVertexColors = textInfo.meshInfo[materialIndex].colors32;
-        newVertexColors[vertexIndex + 0] = color;
-        newVertexColors[vertexIndex + 1] = color;
-        newVertexColors[vertexIndex + 2] = color;
-        newVertexColors[vertexIndex + 3] = color;
+
+        if (charInfo.spriteAsset == null)
+        {
+            var newVertexColors = textInfo.meshInfo[materialIndex].colors32;
+            newVertexColors[vertexIndex + 0] = color;
+            newVertexColors[vertexIndex + 1] = color;
+            newVertexColors[vertexIndex + 2] = color;
+            newVertexColors[vertexIndex + 3] = color;
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)

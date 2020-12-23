@@ -35,27 +35,7 @@ MonoBehaviour:
       lifePoints: 2
     - cellIndex: {x: 0, y: 8}
       lifePoints: 2
-  - pointsToPass: 300
-    gridSet:
-    - cellIndex: {x: 0, y: 0}
-      lifePoints: 2
-    - cellIndex: {x: 1, y: 1}
-      lifePoints: 2
-    - cellIndex: {x: 2, y: 2}
-      lifePoints: 2
-    - cellIndex: {x: 3, y: 3}
-      lifePoints: 2
-    - cellIndex: {x: 4, y: 4}
-      lifePoints: 2
-    - cellIndex: {x: 5, y: 5}
-      lifePoints: 2
-    - cellIndex: {x: 6, y: 6}
-      lifePoints: 2
-    - cellIndex: {x: 7, y: 7}
-      lifePoints: 2
-    - cellIndex: {x: 8, y: 8}
-      lifePoints: 2
-  - pointsToPass: 300
+  - pointsToPass: 100
     gridSet:
     - cellIndex: {x: 0, y: 0}
       lifePoints: 2

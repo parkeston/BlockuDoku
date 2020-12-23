@@ -17,8 +17,10 @@ public class ChallengeCalendar : MonoBehaviour
         var daysInMonth = DateTime.DaysInMonth(selectedMonth.Year, selectedMonth.Month);
         
         monthName.text = selectedMonth.ToString("MMMM yyyy");
-        monthScore.text = $"{Random.Range(0, daysInMonth + 1)}/{daysInMonth}";
-        calendarDrawer.DrawMonth(GetFirstDayOfMonth(selectedMonth), monthOffsetFromCurrent == 0 ? selectedMonth.Day : daysInMonth);
+        monthScore.text = GameManager.Instance.GameMode.GetMonthChallengeProgressString(selectedMonth);
+        calendarDrawer.DrawMonth(GetFirstDayOfMonth(selectedMonth), 
+            monthOffsetFromCurrent == 0 ? selectedMonth.Day : daysInMonth, 
+            GameManager.Instance.GameMode.GetMonthChallengeCompletion(selectedMonth));
     }
 
     public DateTime GetSelectedDate() =>

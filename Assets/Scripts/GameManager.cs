@@ -44,7 +44,7 @@ public class GameManager : Singleton<GameManager>
 
    public void Win()
    {
-      //todo: save set challenge as completed
+      GameMode.SetChallengeCompleted();
       UIManager.Show(UIPanel.Type.ChallengeResultScreen);
    }
 

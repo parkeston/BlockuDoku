@@ -21,7 +21,8 @@ public class GameScoreChallengeUI : UIPanel
 
     protected override void OnShown()
     {
-        challengePointsProgress.fillAmount = GameManager.Instance.ChallengeProgress;
+        challengePointsProgress.fillAmount = GameManager.Instance.GameMode.IsChallengeCompleted()
+            ?1:GameManager.Instance.ChallengeProgress;
         pointsAnimatedCounter.ResetCounterTo(GameManager.Instance.GameScore.CurrentScore);
         
         challengePointsToPass.text = GameManager.Instance.GameMode.CurrentChallenge.PointsToPass.ToString();
@@ -38,7 +39,8 @@ public class GameScoreChallengeUI : UIPanel
 
     private void UpdateScore(int earnedPoints)
     {
-        challengePointsProgress.fillAmount = GameManager.Instance.ChallengeProgress;
+        if(!GameManager.Instance.GameMode.IsChallengeCompleted())
+            challengePointsProgress.fillAmount = GameManager.Instance.ChallengeProgress;
         pointsAnimatedCounter.SetValue(GameManager.Instance.GameScore.CurrentScore);
     }
 }
