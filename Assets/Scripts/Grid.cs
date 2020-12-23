@@ -296,6 +296,8 @@ public class Grid : MonoBehaviour
         SetPoints.ExceptWith(ComboHighlights);
         scorePopup.transform.position = comboPopupPosition;
         GameManager.Instance.GameScore.AddScore(scoreCellsCount);
+        if(GameManager.Instance.ChallengeProgress>=1)
+            CoroutineSheduler.Instance.InvokeWithDelay(GameManager.Instance.Win,1f);
     }
 
     private void UpdateMultiLifeMode()

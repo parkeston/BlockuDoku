@@ -9,6 +9,9 @@ public class GameManager : Singleton<GameManager>
    public GameScore GameScore { get; private set; }
    public event Action<GameMode> OnGameStarted;
 
+   public float ChallengeProgress =>
+      GameMode.IsChallengeMode ? Mathf.Clamp01((float)GameScore.CurrentScore / GameMode.CurrentChallenge.PointsToPass) : 0;
+
    private void Awake()
    {
       GameMode = new GameMode();
@@ -41,7 +44,8 @@ public class GameManager : Singleton<GameManager>
 
    public void Win()
    {
-      //todo: win challenge logic
+      //todo: save set challenge as completed
+      UIManager.Show(UIPanel.Type.ChallengeResultScreen);
    }
 
    public void Lose(Rect gridRect)
@@ -49,12 +53,12 @@ public class GameManager : Singleton<GameManager>
       if (!GameMode.IsChallengeMode)
       {
          GameScore.TrySaveNewHighScore();
-         UIManager.InvokePanelAction(UIPanel.Type.LoseScreen,
-            losePanel =>  (losePanel as LoseScreen)?.TakeScreenshot(gridRect));
-         UIManager.Show(UIPanel.Type.LoseScreen);
+         UIManager.InvokePanelAction(UIPanel.Type.MatchResultScreen,
+            losePanel =>  (losePanel as MatchResultScreen)?.TakeScreenshot(gridRect));
+         UIManager.Show(UIPanel.Type.MatchResultScreen);
       }
       else
-         UIManager.Show(UIPanel.Type.LoseScreenChallenge);
+         UIManager.Show(UIPanel.Type.ChallengeResultScreen);
    }
 
    public void ToMainMenu()

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoseScreen : UIPanel
+public class MatchResultScreen : UIPanel
 {
     [SerializeField] private TMP_Text scoreTitle;
     [SerializeField] private ScoreGroup scorePoints;

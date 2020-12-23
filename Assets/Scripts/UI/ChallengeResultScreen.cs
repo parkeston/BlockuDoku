@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoseScreenChallenge : UIPanel
+public class ChallengeResultScreen : UIPanel
 {
     [SerializeField] private TMP_Text challengeProgressTitle;
     [SerializeField] private Image challengeProgressBar;
@@ -18,9 +18,10 @@ public class LoseScreenChallenge : UIPanel
     protected override void OnShown()
     {
         //todo: animate
-        float progress = (float)GameManager.Instance.GameScore.CurrentScore /
-                         GameManager.Instance.GameMode.CurrentChallenge.PointsToPass;
+        float progress = GameManager.Instance.ChallengeProgress;
         challengeProgressBar.fillAmount = progress;
         challengeProgressTitle.text = $"{(int)(progress*100)}% Done";
+        
+        retryButton.gameObject.SetActive(progress<1);
     }
 }

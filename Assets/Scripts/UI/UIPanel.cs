@@ -1,6 +1,4 @@
-﻿
-using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class UIPanel : MonoBehaviour
 {
@@ -8,10 +6,10 @@ public abstract class UIPanel : MonoBehaviour
     public enum Type
     {
         Undefined,
-        LoseScreen,
+        MatchResultScreen,
         MainMenu,
         GameScore,
-        LoseScreenChallenge,
+        ChallengeResultScreen,
         GameScoreChallenge
     }
 

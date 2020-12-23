@@ -6554,7 +6554,7 @@ GameObject:
   - component: {fileID: 1234603962}
   - component: {fileID: 1234603963}
   m_Layer: 5
-  m_Name: LoseScreenDefault
+  m_Name: MatchResultScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10187,7 +10187,7 @@ GameObject:
   - component: {fileID: 1862558817}
   - component: {fileID: 1862558816}
   m_Layer: 5
-  m_Name: LoseScreenChallenge
+  m_Name: ChallengeResultScreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
