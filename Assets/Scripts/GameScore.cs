@@ -8,7 +8,7 @@ public class GameScore
     public int CurrentScore { get; private set; }
     public bool IsNewHighScore { get; private set; }
 
-    public event Action<int, Vector3> OnScoreAdded;
+    public event Action<int> OnScoreChanged;
 
     public GameScore() => ResetScore();
 
@@ -19,7 +19,7 @@ public class GameScore
         IsNewHighScore = false;
     }
 
-    public void AddScore(int cells,Vector3 comboPopupPosition)
+    public void AddScore(int cells)
     {
         int earnedPoints = cells * (cells<9?1:scoreForComboCell);
         CurrentScore += earnedPoints;
@@ -27,7 +27,7 @@ public class GameScore
         if (CurrentScore > CurrentHighScore && !IsNewHighScore)
             IsNewHighScore = true;
         
-        OnScoreAdded?.Invoke(earnedPoints,comboPopupPosition);
+        OnScoreChanged?.Invoke(earnedPoints);
     }
     
     public void TrySaveNewHighScore()

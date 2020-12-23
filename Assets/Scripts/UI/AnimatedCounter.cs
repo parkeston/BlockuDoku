@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -14,6 +13,7 @@ public class AnimatedCounter : MonoBehaviour
     public void ResetCounterTo(float value)
     {
         this.value = value;
+        valueText.text = ((int)value).ToString();
     }
 
     public void SetValue(int targetValue)

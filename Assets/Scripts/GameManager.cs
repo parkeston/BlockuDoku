@@ -35,12 +35,13 @@ public class GameManager : Singleton<GameManager>
    public void Retry()
    {
       GameScore.ResetScore();
-      UIManager.Show(UIPanel.Type.GameScore,true,panel => OnGameStarted?.Invoke(GameMode));
+      UIManager.Show(GameMode.IsChallengeMode?UIPanel.Type.GameScoreChallenge:UIPanel.Type.GameScore,true,
+         panel => OnGameStarted?.Invoke(GameMode));
    }
 
    public void Win()
    {
-      GameScore.TrySaveNewHighScore();
+      //todo: win challenge logic
    }
 
    public void Lose(Rect gridRect)

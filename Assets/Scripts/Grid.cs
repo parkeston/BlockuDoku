@@ -7,6 +7,7 @@ using Random = UnityEngine.Random;
 public class Grid : MonoBehaviour
 {
     //todo: refactor
+    [SerializeField] private ScorePopup scorePopup;
     [SerializeField] private GridText gridText;
 
     [Space]
@@ -161,7 +162,7 @@ public class Grid : MonoBehaviour
             anyInteractable|= CheckFigurePlacementAbility(currentFigure);
         if(!anyInteractable)
             CoroutineSheduler.Instance.InvokeWithDelay(()=>
-                GameManager.Instance.Lose(new Rect(gridBounds.min,gridBounds.size)),0.5f);
+                GameManager.Instance.Lose(new Rect(gridBounds.min,gridBounds.size)),1f);
     }
 
     private bool CheckFigurePlacementAbility(Figure figure)
@@ -293,7 +294,8 @@ public class Grid : MonoBehaviour
         
         UpdateMultiLifeMode();
         SetPoints.ExceptWith(ComboHighlights);
-        GameManager.Instance.GameScore.AddScore(scoreCellsCount,comboPopupPosition);
+        scorePopup.transform.position = comboPopupPosition;
+        GameManager.Instance.GameScore.AddScore(scoreCellsCount);
     }
 
     private void UpdateMultiLifeMode()

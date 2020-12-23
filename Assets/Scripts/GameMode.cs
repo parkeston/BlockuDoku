@@ -8,6 +8,7 @@ public class GameMode
     private Dictionary<(int month,int year),MonthChallengeSet> monthChallengeSets;
     
     public bool IsChallengeMode => CurrentChallenge!=null;
+    public DateTime ChallengeDate { get; private set; }
     public Challenge CurrentChallenge { get; private set; }
 
     public GameMode()
@@ -27,6 +28,7 @@ public class GameMode
         int month = dateTime.Month;
         int year = dateTime.Year;
         int day = dateTime.Day;
+        ChallengeDate = dateTime;
         CurrentChallenge = monthChallengeSets.ContainsKey((month, year)) ? monthChallengeSets[(month, year)].GetChallenge(day) : null;
     }
 }

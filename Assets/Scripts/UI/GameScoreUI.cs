@@ -4,7 +4,6 @@ using UnityEngine.UI;
 public class GameScoreUI : UIPanel
 {
     [SerializeField] private AnimatedCounter pointsAnimatedCounter;
-    [SerializeField] private AnimatedPopup pointsAnimatedPopup;
 
     [Space] 
     [SerializeField] private ScoreGroup highScoreGroup;
@@ -15,7 +14,6 @@ public class GameScoreUI : UIPanel
 
     public override void Init()
     {
-        GameManager.Instance.GameScore.OnScoreAdded += ShowScoreAdditionPopup;
         backButton.onClick.AddListener(GameManager.Instance.ToMainMenu);
     }
 
@@ -28,21 +26,20 @@ public class GameScoreUI : UIPanel
         currentPointsGroup.ScoreIcon.SetActive(false);
         
         pointsAnimatedCounter.ResetCounterTo(GameManager.Instance.GameScore.CurrentScore);
+        
+        GameManager.Instance.GameScore.OnScoreChanged += UpdateScore;
     }
 
-    private void ShowScoreAdditionPopup(int earnedPoints,Vector3 comboPopupPosition)
+    protected override void OnHide()
+    {
+        GameManager.Instance.GameScore.OnScoreChanged -= UpdateScore;
+        Close();
+    }
+
+    private void UpdateScore(int earnedPoints)
     {
         pointsAnimatedCounter.SetValue(GameManager.Instance.GameScore.CurrentScore);
         CheckForNewHighScore();
-
-        if(earnedPoints<18) //not a combo
-            return;
-       
-        pointsAnimatedPopup.transform.position = comboPopupPosition;
-        if(earnedPoints>18) //multi-combo
-            pointsAnimatedPopup.PlayComboPopup(earnedPoints.ToString());
-        else
-            pointsAnimatedPopup.PlayPopup(earnedPoints.ToString());
     }
 
     private void CheckForNewHighScore()
