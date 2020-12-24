@@ -1,7 +1,6 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class ChallengeCalendar : MonoBehaviour
 {
@@ -11,20 +10,18 @@ public class ChallengeCalendar : MonoBehaviour
 
     private DateTime selectedMonth;
     
-    public void ChangeMonth(int monthOffsetFromCurrent)
+    public void ChangeMonth(MonthChallengeSet monthChallengeSet)
     {
-        selectedMonth = DateTime.Today.AddMonths(monthOffsetFromCurrent);
-        var daysInMonth = DateTime.DaysInMonth(selectedMonth.Year, selectedMonth.Month);
+        (int month, int year) = monthChallengeSet.Date;
+        var today = DateTime.Today;
+        int challengeCurrentDay = (today.Month == month && today.Year == year) ? today.Day : DateTime.DaysInMonth(year, month);
+        selectedMonth = new DateTime(year, month, 1);
         
         monthName.text = selectedMonth.ToString("MMMM yyyy");
-        monthScore.text = GameManager.Instance.GameMode.GetMonthChallengeProgressString(selectedMonth);
-        calendarDrawer.DrawMonth(GetFirstDayOfMonth(selectedMonth), 
-            monthOffsetFromCurrent == 0 ? selectedMonth.Day : daysInMonth, 
-            GameManager.Instance.GameMode.GetMonthChallengeCompletion(selectedMonth));
+        monthScore.text = monthChallengeSet.GetProgressString();
+        calendarDrawer.DrawMonth(selectedMonth, challengeCurrentDay,monthChallengeSet.GetCompletionState());
     }
 
     public DateTime GetSelectedDate() =>
         new DateTime(selectedMonth.Year, selectedMonth.Month, calendarDrawer.SelectedDay);
-
-    private DateTime GetFirstDayOfMonth(DateTime dateTime) => new DateTime(dateTime.Year, dateTime.Month, 1);
 }

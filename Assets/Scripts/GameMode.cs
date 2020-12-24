@@ -44,24 +44,6 @@ public class GameMode
                && monthChallengeSets[(ChallengeDate.Month,ChallengeDate.Year)].IsChallengeCompleted(ChallengeDate.Day);
     }
 
-    public bool[] GetMonthChallengeCompletion(DateTime dateTime)
-    {
-        int month = dateTime.Month;
-        int year = dateTime.Year;
-        return monthChallengeSets.ContainsKey((month, year))
-            ? monthChallengeSets[(month, year)].GetCompletionState()
-            : null;
-    }
-
-    public string GetMonthChallengeProgressString(DateTime dateTime)
-    {
-        int month = dateTime.Month;
-        int year = dateTime.Year;
-        return monthChallengeSets.ContainsKey((month, year))
-            ? monthChallengeSets[(month, year)].GetProgressString()
-            : "0/0";
-    }
-
     public MonthChallengeSet[] GetAvailableChallenges()
     {
         return monthChallengeSets.Values.ToArray();
