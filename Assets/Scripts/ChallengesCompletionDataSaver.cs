@@ -58,6 +58,21 @@ public class ChallengesCompletionDataSaver: MonoBehaviour
       return false;
    }
 
+   public void ClearGameSaves()
+   {
+      for (int i = 0; i < monthChallengeSets.Length; i++)
+         ClearFile(saveFileName+i);
+   }
+   
+   private void ClearFile(string filename)
+   {
+      if(savePath == null)
+         savePath = Path.Combine(Application.persistentDataPath, saveDirectoryName);
+      string filePath = Path.Combine(savePath, filename);
+      if (File.Exists(filePath))
+         File.Delete(filePath);
+   }
+
    private void Awake()
    {
       savePath = Path.Combine(Application.persistentDataPath, saveDirectoryName);
