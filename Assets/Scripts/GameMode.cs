@@ -61,4 +61,9 @@ public class GameMode
             ? monthChallengeSets[(month, year)].GetProgressString()
             : "0/0";
     }
+
+    public MonthChallengeSet[] GetAvailableChallenges()
+    {
+        return monthChallengeSets.Values.ToArray();
+    }
 }

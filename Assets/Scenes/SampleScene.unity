@@ -2929,7 +2929,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 0
-  challengesAwardPrefab: {fileID: 8572729615758103678, guid: 3cf8d08bde8c8403196827f70011c2b6,
+  challengeAwardListItem: {fileID: 2639473397229585838, guid: 3cf8d08bde8c8403196827f70011c2b6,
     type: 3}
   challengesAwardsList: {fileID: 514182478}
 --- !u!1 &519420028
@@ -9869,7 +9869,7 @@ MonoBehaviour:
   type: 0
   maxMonthOffsetFromCurrent: {x: -2, y: 0}
   snapScrollRect: {fileID: 82482863}
-  monthCupPrefab: {fileID: 8572729615758103678, guid: a91df4eee669b428cb704bc980255b03,
+  awardCalendarPreview: {fileID: 4792520557574042613, guid: a91df4eee669b428cb704bc980255b03,
     type: 3}
   challengeCalendar: {fileID: 819747078}
   playButton: {fileID: 175491648}

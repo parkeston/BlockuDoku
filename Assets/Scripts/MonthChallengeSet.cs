@@ -8,8 +8,17 @@ public class MonthChallengeSet : ScriptableObject
 {
     [SerializeField] private int month;
     [SerializeField] private int year;
+
+    [Space] 
+    [SerializeField] private Sprite cupImage;
+    [SerializeField] private bool isCompleted;
     
+    [Space]
     [SerializeField] private Challenge[] challenges;
+    
+    public (int month, int year) Date => (month,year);
+    public Sprite CupImage => cupImage;
+    public bool IsCompleted => isCompleted;
 
     private void OnValidate()
     {
@@ -17,7 +26,6 @@ public class MonthChallengeSet : ScriptableObject
             Array.Resize(ref challenges,DateTime.DaysInMonth(year, month));
     }
 
-    public (int month, int year) Date => (month,year);
 
     public Challenge GetChallenge(int day)
     {
@@ -28,6 +36,8 @@ public class MonthChallengeSet : ScriptableObject
     {
         if (day <= challenges.Length)
             challenges[day - 1].IsCompleted = true;
+
+        isCompleted = challenges.Count(challenge => challenge.IsCompleted) == challenges.Length;
     }
 
     public bool IsChallengeCompleted(int day)

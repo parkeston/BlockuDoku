@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class ChallengeScreen : UIPanel
@@ -9,7 +7,7 @@ public class ChallengeScreen : UIPanel
 
     [Space]
     [SerializeField] private SnapScrollRect snapScrollRect;
-    [SerializeField] private GameObject monthCupPrefab;
+    [SerializeField] private ChallengeAwardCalendarPreview awardCalendarPreview;
     [SerializeField] private ChallengeCalendar challengeCalendar;
     [SerializeField] private Button playButton;
 
@@ -17,9 +15,12 @@ public class ChallengeScreen : UIPanel
 
     public override void Init()
     {
-        var cupsCount = maxMonthOffsetFromCurrent.y - maxMonthOffsetFromCurrent.x+1;
-        for (int i = 0; i < cupsCount; i++)
-            Instantiate(monthCupPrefab, snapScrollRect.content, false);
+        var availableChallenges = GameManager.Instance.GameMode.GetAvailableChallenges();
+        foreach (var challenge in availableChallenges)
+        {
+            Instantiate(awardCalendarPreview, snapScrollRect.content, false)
+                .SetImage(challenge.CupImage);
+        }
         
         snapScrollRect.OnSnapping += ChangeChallengeMonth;
         playButton.onClick.AddListener(PlayChallenge);
